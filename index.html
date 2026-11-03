@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Mi garaje</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#090d1a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);
+--bg:#ecefee;--sf:#fff;--ink:#17232b;--mute:#5f6f78;--line:#d3dad9;--acc:#0b7a6a;--ai:#fff;--warn:#c2410c;--soft:#e1ece9}
+@media (prefers-color-scheme:dark){:root{color-scheme:dark;--bg:#10181d;--sf:#18232a;--ink:#e8eeee;--mute:#93a4ab;--line:#2a3941;--acc:#3cc2aa;--ai:#07201b;--warn:#fb923c;--soft:#1d2f33}}
+*,*::before,*::after{box-sizing:border-box}
+html{height:100%}
+body{margin:0;min-height:100%;background:var(--bg);color:var(--ink);font:16px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+main{max-width:720px;margin:0 auto;padding:14px 14px 150px}
+h1,h2,.num{font-family:"Arial Narrow","Roboto Condensed",system-ui,sans-serif;font-weight:700;font-stretch:condensed}
+h1{font-size:26px;margin:0}h2{font-size:20px;margin:22px 0 8px}
+header{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px}
+select,input,textarea,button{font:inherit;color:inherit}
+select,input,textarea{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:8px;background:var(--sf)}
+:focus-visible{outline:3px solid var(--acc);outline-offset:1px}
+button{cursor:pointer;border:1px solid var(--line);background:var(--sf);border-radius:8px;padding:10px 14px;font-weight:600}
+button.p{background:var(--acc);color:var(--ai);border-color:var(--acc)}
+button.g{border:0;background:none;color:var(--mute);padding:6px 8px}
+a.btn{display:inline-block;text-decoration:none;color:var(--ink);border:1px solid var(--line);background:var(--sf);border-radius:8px;padding:9px 12px;font-weight:600;font-size:15px;margin:0 6px 6px 0}
+a.btn.ai{border-color:var(--acc);color:var(--acc)}
+.veh{display:flex;gap:8px}.veh select{flex:1}
+.hero{position:relative;border-radius:14px;overflow:hidden;margin:12px 0;background:var(--ink);color:var(--bg);min-height:150px;display:flex;align-items:flex-end}
+.hero img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.55}
+.hero .in{position:relative;padding:16px 18px;width:100%;display:flex;justify-content:space-between;align-items:flex-end;gap:10px;background:linear-gradient(transparent,rgba(0,0,0,.6));color:#fff}
+.hero .num{font-size:44px;line-height:1}.hero small{opacity:.85;display:block}
+.hero button{background:rgba(0,0,0,.35);color:#fff;border-color:rgba(255,255,255,.6)}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.stat{background:var(--sf);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.stat .num{font-size:24px;line-height:1.1;display:block}.stat span{color:var(--mute);font-size:13px}
+.rem{background:var(--sf);border:1px solid var(--line);border-left:6px solid var(--acc);border-radius:10px;padding:10px 12px;margin-bottom:8px;display:flex;justify-content:space-between;gap:10px}
+.rem.late{border-left-color:var(--warn)}.rem.soon{border-left-color:#d4a017}
+.rem em{font-style:normal;color:var(--mute);font-size:14px;display:block}.rem .w{text-align:right;font-weight:600}.late .w{color:var(--warn)}
+.chips{display:flex;gap:6px;overflow-x:auto;padding-bottom:6px;margin-bottom:8px}
+.chip{white-space:nowrap;border-radius:99px;padding:6px 12px;font-size:14px}.chip.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.row{background:var(--sf);border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin-bottom:8px}
+.top{display:flex;justify-content:space-between;gap:10px;font-weight:600}
+.meta{color:var(--mute);font-size:14px}.notes{margin-top:4px;font-size:14px;white-space:pre-wrap}
+.tag{display:inline-block;background:var(--soft);color:var(--acc);border-radius:6px;padding:0 7px;font-size:13px;margin-right:6px;font-weight:600}
+.tag.open{background:var(--warn);color:#fff}
+.empty{text-align:center;color:var(--mute);padding:26px 10px;border:1px dashed var(--line);border-radius:10px}
+.ra{display:flex;justify-content:flex-end;gap:6px;flex-wrap:wrap;margin-top:6px}
+table{width:100%;border-collapse:collapse;font-size:14px}th,td{padding:6px 4px;text-align:right;border-bottom:1px solid var(--line)}th:first-child,td:first-child{text-align:left}
+.wrap{overflow-x:auto}
+nav{position:fixed;left:0;right:0;bottom:0;display:flex;background:var(--sf);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom,0px);z-index:5}
+nav button{flex:1;border:0;border-radius:0;background:none;padding:12px 2px;font-size:14px;color:var(--mute)}
+nav button.on{color:var(--acc);box-shadow:inset 0 3px 0 var(--acc)}
+.fab{position:fixed;right:14px;bottom:calc(62px + env(safe-area-inset-bottom,0px));padding:13px 18px;border-radius:99px;box-shadow:0 4px 14px rgba(0,0,0,.3);z-index:6}
+dialog{border:0;border-radius:14px;padding:16px;width:min(520px,94vw);background:var(--sf);color:var(--ink);max-height:92vh}
+dialog::backdrop{background:rgba(0,0,0,.5)}
+label{display:block;font-size:14px;color:var(--mute);margin:9px 0 3px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.acts{display:flex;justify-content:space-between;gap:8px;margin-top:14px}.acts div{display:flex;gap:8px}
+.ph{display:flex;gap:10px;align-items:center}.ph img{width:80px;height:56px;object-fit:cover;border-radius:8px;background:var(--line)}
+
+body{background:radial-gradient(900px 320px at 50% -90px,rgba(45,212,176,.22),transparent),var(--bg);background-attachment:fixed}
+.logo{display:inline-grid;place-items:center;width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,#2dd4b0,#0b7a6a);color:#04211c;font-size:20px;margin-right:8px;vertical-align:middle}
+.hero{min-height:210px;border-radius:22px;border:1px solid rgba(255,255,255,.08);box-shadow:0 8px 24px rgba(0,0,0,.28);background:#0e1418}
+.hero img{opacity:.8}
+.hero .in{padding:60px 18px 16px;background:linear-gradient(transparent,rgba(5,10,12,.88));align-items:flex-end}
+.hero small{font-weight:600;letter-spacing:.2px}
+.hero button{backdrop-filter:blur(6px);font-size:13px;padding:7px 11px}
+.ph0{position:absolute;inset:0;display:grid;place-items:center;font-size:92px;padding-bottom:40px;background:radial-gradient(circle at 70% 25%,#1f5a52,#0e1418 70%)}
+.odo{display:inline-flex;align-items:center;margin-top:6px;font:700 28px ui-monospace,"SF Mono",Menlo,Consolas,monospace}
+.odo i{font-style:normal;width:.72em;text-align:center;margin-right:3px;padding:3px 0;border-radius:5px;background:linear-gradient(#000,#2a2f33 50%,#000);border:1px solid #3b4247;box-shadow:inset 0 0 6px rgba(0,0,0,.8)}
+.odo b{font:600 14px system-ui,sans-serif;margin-left:6px;opacity:.9}
+.dash{display:grid;grid-template-columns:1.15fr 1fr;gap:10px}
+.gauge{position:relative;background:linear-gradient(160deg,#16262c,#0b1317);color:#fff;border-radius:18px;padding:14px 10px 12px;border:1px solid rgba(255,255,255,.08)}
+.gauge svg{width:100%;display:block}
+.gv{position:absolute;left:0;right:0;bottom:12px;text-align:center}
+.gv .num{font-size:34px;line-height:1;display:block}.gv small{opacity:.7;font-size:12px}
+.side{display:grid;gap:10px}
+.stat{border-radius:16px;display:flex;flex-direction:column;justify-content:center;border-left:4px solid var(--acc)}
+.stat .num{font-size:26px}
+.rem{border-radius:14px}
+.row{display:flex;gap:12px;border-radius:14px}
+.rb{flex:1;min-width:0}
+.ic{width:44px;height:44px;flex:none;border-radius:13px;display:grid;place-items:center;font-size:22px;background:color-mix(in srgb,var(--c) 18%,transparent);border:1px solid color-mix(in srgb,var(--c) 45%,transparent)}
+.t-gas{--c:#2dd4b0}.t-rev{--c:#60a5fa}.t-tyre{--c:#a78bfa}.t-fail{--c:#f97316}.t-ins{--c:#34d399}.t-itv{--c:#fbbf24}.t-other{--c:#94a3b8}
+.tag{background:color-mix(in srgb,var(--c,#0b7a6a) 18%,transparent);color:var(--ink)}
+.tag.open{background:var(--warn);color:#fff}
+.empty{border-radius:16px;font-size:15px;padding:30px 14px}
+nav{border-radius:20px 20px 0 0;box-shadow:0 -6px 20px rgba(0,0,0,.18)}
+nav button{font-size:12px;padding:8px 2px 10px}
+nav button span{display:block;font-size:21px;line-height:1.2;filter:grayscale(1);opacity:.7}
+nav button.on{box-shadow:none;font-weight:700}
+nav button.on span{filter:none;opacity:1;transform:translateY(-2px)}
+.fab{background:linear-gradient(135deg,#2dd4b0,#0f9a84);color:#04211c;border:0;font-size:16px}
+button.p{background:linear-gradient(135deg,#2dd4b0,#0f9a84);color:#04211c;border-color:transparent}
+.chip.on{background:var(--acc);color:var(--ai);border-color:var(--acc)}
+@media (prefers-reduced-motion:no-preference){.gauge path:nth-of-type(2){animation:g 1s ease-out}@keyframes g{from{stroke-dasharray:0 188.5}}}
+
+:root{color-scheme:dark;--bg:#090d1a;--sf:#131b33;--ink:#eef2ff;--mute:#8b97bd;--line:#26315a;--acc:#38bdf8;--ai:#04121f;--warn:#fb923c;--soft:#1a2547}
+body{background:radial-gradient(700px 380px at 105% -60px,rgba(139,92,246,.38),transparent),radial-gradient(600px 360px at -10% 8%,rgba(56,189,248,.22),transparent),var(--bg);background-attachment:fixed}
+main{padding-bottom:180px}
+h1{font-style:italic;font-weight:800;font-size:28px;letter-spacing:-.3px}
+h2{display:flex;align-items:center;gap:8px;font-size:21px;font-style:italic}
+h2::before{content:"";width:5px;height:20px;border-radius:3px;background:linear-gradient(#38bdf8,#8b5cf6)}
+.logo{background:linear-gradient(135deg,#38bdf8,#8b5cf6);color:#fff;box-shadow:0 0 16px rgba(139,92,246,.6);font-style:normal}
+.veh{display:none}
+.strip{display:flex;gap:10px;overflow-x:auto;padding:4px 2px 10px;scroll-snap-type:x mandatory}
+.vc{flex:none;scroll-snap-align:start;display:flex;align-items:center;gap:8px;padding:5px 16px 5px 5px;border-radius:99px;background:var(--sf);border:1px solid var(--line)}
+.vc.on{border-color:#38bdf8;box-shadow:0 0 0 2px rgba(56,189,248,.3),0 0 20px rgba(139,92,246,.4)}
+.vi{width:38px;height:38px;border-radius:50%;overflow:hidden;display:grid;place-items:center;background:var(--soft);font-size:19px}.vi img{width:100%;height:100%;object-fit:cover}
+.vc.add{border-style:dashed;color:var(--mute)}
+.hero{min-height:270px;border-radius:26px;border:1px solid rgba(125,211,252,.35);box-shadow:0 0 0 1px rgba(139,92,246,.25),0 14px 40px rgba(56,189,248,.18)}
+.hero img{opacity:.95}
+.hero .in{padding:90px 18px 16px;background:linear-gradient(transparent,rgba(9,13,26,.95) 70%)}
+.vt{display:block;font:italic 800 30px/1 "Arial Narrow",system-ui,sans-serif;letter-spacing:-.4px;text-shadow:0 2px 12px rgba(0,0,0,.6)}
+.hero small{display:block;margin-top:4px;opacity:.85}
+.plate{position:relative;display:inline-block;margin-top:8px;background:#fff;color:#111;border:2px solid #111;border-radius:6px;padding:1px 10px 1px 24px;font:700 14px ui-monospace,Menlo,Consolas,monospace;letter-spacing:1px}
+.plate::before{content:"E";position:absolute;left:0;top:0;bottom:0;width:15px;background:#1d4ed8;color:#fff;font-size:9px;display:grid;place-items:center}
+.ph0{background:radial-gradient(circle at 70% 20%,#5b3fd6,#0f1a3a 70%);font-size:110px}
+.odo{margin-top:10px;font-size:26px}
+.odo i{color:#bae6fd;text-shadow:0 0 8px rgba(56,189,248,.9);background:linear-gradient(#02040a,#1b2440 50%,#02040a);border-color:#334170}
+.qa{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:12px 0}
+.qa button{display:flex;flex-direction:column;align-items:center;gap:4px;padding:12px 2px;border-radius:16px;font-size:13px;background:linear-gradient(160deg,#1b2650,#131b33);border-color:#2f3d75}
+.qa button span{font-size:26px}
+.dash{gap:10px}
+.gauge{background:linear-gradient(160deg,#1c2a5a,#0d1430);border-color:#34478a;box-shadow:0 0 24px rgba(56,189,248,.18) inset}
+.gauge svg{filter:drop-shadow(0 0 6px rgba(139,92,246,.7))}
+.stat{background:linear-gradient(160deg,#18224a,#111a35);border:1px solid var(--line);border-left:4px solid #8b5cf6}
+.row,.rem,.empty,.chip,select,input,textarea{border-color:var(--line)}
+.row{background:linear-gradient(160deg,#16204a,#121a36)}
+.rem{background:linear-gradient(160deg,#16204a,#121a36);border-left-color:#38bdf8}
+.rem.late{border-left-color:var(--warn)}.rem.soon{border-left-color:#fbbf24}
+.chip.on{background:linear-gradient(135deg,#38bdf8,#8b5cf6);color:#fff;border-color:transparent}
+button.p,.fab{background:linear-gradient(135deg,#38bdf8,#8b5cf6);color:#fff;border:0;box-shadow:0 6px 18px rgba(139,92,246,.45)}
+.fab{bottom:calc(88px + env(safe-area-inset-bottom,0px));font-size:16px;padding:14px 20px}
+nav{left:12px;right:12px;bottom:calc(10px + env(safe-area-inset-bottom,0px));border-radius:24px;border:1px solid #2f3d75;background:rgba(19,27,51,.88);backdrop-filter:blur(14px);padding:6px;gap:4px;box-shadow:0 10px 30px rgba(0,0,0,.5)}
+nav button{border-radius:18px;padding:7px 2px 8px}
+nav button.on{background:linear-gradient(135deg,rgba(56,189,248,.28),rgba(139,92,246,.3));color:#fff}
+.welcome{text-align:center;padding:40px 16px;margin-top:20px;border-radius:24px;border:1px dashed #3a4a8a;background:rgba(19,27,51,.6)}
+.welcome .big{font-size:64px}.welcome h2{justify-content:center}.welcome h2::before{display:none}
+.welcome p{color:var(--mute);margin:0 0 18px}
+dialog{border:1px solid #2f3d75;background:linear-gradient(160deg,#16204a,#0f1630)}
+</style>
+</head>
+<body>
+<main>
+<header><h1><span class="logo">⚙</span>Mi garaje</h1><div><button class="g" id="sg">🔍 Buscar</button><button class="g" id="bk">Copia</button></div></header>
+<div id="strip" class="strip"></div>
+<div class="veh"><select id="vs" aria-label="Vehículo"></select><button id="addv">Nuevo</button></div>
+<div id="app"></div>
+</main>
+<button class="p fab" id="add">+ Registro</button>
+<nav id="nav"></nav>
+
+<dialog id="dg"><form method="dialog" id="fm" style="margin:0">
+<h2 style="margin-top:0">Nuevo registro</h2>
+<label for="t">Tipo</label><select id="t"></select>
+<label for="ti">Título</label><input id="ti" placeholder="Ej.: Cambio de aceite, Ruido al frenar…">
+<div class="two"><div><label for="d">Fecha</label><input type="date" id="d" required></div>
+<div><label for="k">Kilómetros</label><input type="number" id="k" inputmode="numeric" min="0"></div></div>
+<div class="two"><div><label for="c">Importe (€)</label><input type="number" id="c" inputmode="decimal" step="0.01" min="0"></div>
+<div id="lw"><label for="l">Litros</label><input type="number" id="l" inputmode="decimal" step="0.01" min="0"></div>
+<div id="sw"><label for="st">Estado</label><select id="st"><option value="open">Pendiente</option><option value="done">Resuelta</option></select></div></div>
+<div class="two"><div><label for="nd">Próxima fecha</label><input type="date" id="nd"></div>
+<div><label for="nk">Próximos km</label><input type="number" id="nk" inputmode="numeric" min="0"></div></div>
+<label for="n">Notas</label><textarea id="n" rows="2" placeholder="Taller, marca, síntomas…"></textarea>
+<div class="acts"><button type="button" id="cx">Cancelar</button><button type="submit" class="p">Guardar</button></div>
+</form></dialog>
+
+<dialog id="dv"><form method="dialog" id="fv" style="margin:0">
+<h2 style="margin-top:0" id="vh">Vehículo</h2>
+<div class="ph"><img id="vimg" alt=""><div><label for="vf" style="margin:0">Foto</label><input type="file" id="vf" accept="image/*"></div></div>
+<label for="vn">Nombre</label><input id="vn" required placeholder="Mi coche, La Vespa…">
+<label for="vm">Marca, modelo y motor</label><input id="vm" placeholder="Ej.: Seat León 1.6 TDI">
+<div class="two"><div><label for="vy">Año</label><input id="vy" type="number" inputmode="numeric" min="1950" max="2100"></div>
+<div><label for="vt">Tipo</label><select id="vt"><option value="coche">Coche</option><option value="moto">Moto</option></select></div></div>
+<div class="two"><div><label for="vp">Matrícula</label><input id="vp"></div><div><label for="vk">Km iniciales</label><input id="vk" type="number" inputmode="numeric" min="0"></div></div>
+<div class="acts"><button type="button" id="cv">Cancelar</button><button type="submit" class="p">Guardar vehículo</button></div>
+</form></dialog>
+
+<dialog id="ds"><div>
+<h2 style="margin-top:0">Buscar avería o repuesto</h2>
+<label for="sq">¿Qué pasa o qué necesitas?</label>
+<input id="sq" placeholder="Ej.: ruido al frenar, pastillas de freno, testigo motor…">
+<h2 style="font-size:17px">Diagnóstico con buscador o IA</h2><div id="sl1"></div>
+<h2 style="font-size:17px">Comprar repuesto</h2><div id="sl2"></div>
+<p class="meta">Se abre en otra pestaña con tu vehículo ya incluido en la búsqueda.</p>
+<div class="acts"><span></span><button id="cs">Cerrar</button></div>
+</div></dialog>
+
+<dialog id="db"><div>
+<h2 style="margin-top:0">Copia de seguridad</h2>
+<p class="meta" style="margin-top:0">Los datos se guardan en este dispositivo. Copia el texto para guardarlo, o pégalo aquí para restaurar.</p>
+<textarea id="bt" rows="7"></textarea>
+<div class="acts"><button id="cb">Cerrar</button><div><button id="cp">Copiar</button><button class="p" id="rs">Restaurar</button></div></div>
+</div></dialog>
+
+<script>
+const TYPES={gas:"Repostaje",rev:"Revisión",tyre:"Ruedas",fail:"Avería",ins:"Seguro",itv:"ITV",other:"Otro"};
+const TABS=[["res","Inicio","🏁"],["con","Consumo","⛽"],["ave","Averías","🔧"],["his","Historial","🗂️"]];
+const ICO={gas:"⛽",rev:"🔧",tyre:"🛞",fail:"⚠️",ins:"🛡️",itv:"📋",other:"📝"};
+const $=s=>document.querySelector(s);
+let S={vehicles:[],entries:[],cur:null},tab="res",filter="all",from="",to="",editing=null,photo="";
+try{const r=localStorage.getItem("garaje.v1");if(r)S=JSON.parse(r)}catch(e){}
+const save=()=>{try{localStorage.setItem("garaje.v1",JSON.stringify(S));return true}catch(e){alert("No hay espacio para guardar. Haz una copia de seguridad o usa fotos más pequeñas.");return false}};
+const uid=()=>Math.random().toString(36).slice(2,10);
+const esc=s=>String(s||"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const eur=n=>n.toLocaleString("es-ES",{style:"currency",currency:"EUR"});
+const num=(n,d=0)=>n.toLocaleString("es-ES",{maximumFractionDigits:d,minimumFractionDigits:d});
+const fd=s=>s?new Date(s+"T00:00:00").toLocaleDateString("es-ES",{day:"numeric",month:"short",year:"numeric"}):"";
+const today=()=>new Date().toISOString().slice(0,10);
+const veh=()=>S.vehicles.find(v=>v.id===S.cur);
+$("#t").innerHTML=Object.entries(TYPES).map(([k,v])=>`<option value="${k}">${v}</option>`).join("");
+const sync=()=>{const t=$("#t").value;$("#lw").style.display=t==="gas"?"":"none";$("#sw").style.display=t==="fail"?"":"none"};
+$("#t").onchange=sync;
+
+const odo=n=>String(Math.max(0,n)).padStart(6,"0").split("").map(d=>`<i>${d}</i>`).join("");
+function gauge(v){const max=v&&v>12?20:12,f=v?Math.min(1,v/max):0,L=188.5;
+  return `<div class="gauge"><svg viewBox="0 0 140 84" role="img" aria-label="Consumo medio"><defs><linearGradient id="gg" x1="0" x2="1"><stop offset="0" stop-color="#38bdf8"/><stop offset=".6" stop-color="#a78bfa"/><stop offset="1" stop-color="#f472b6"/></linearGradient></defs><path d="M10 74 A60 60 0 0 1 130 74" fill="none" stroke="rgba(255,255,255,.12)" stroke-width="12" stroke-linecap="round"/>${f?`<path d="M10 74 A60 60 0 0 1 130 74" fill="none" stroke="url(#gg)" stroke-width="12" stroke-linecap="round" stroke-dasharray="${L*f} ${L}"/>`:""}</svg><div class="gv"><span class="num">${v?num(v,1):"–"}</span><small>L/100 km · media</small></div></div>`}
+function consumo(es){
+  const g=es.filter(e=>e.type==="gas"&&e.km&&e.liters).sort((a,b)=>a.km-b.km),segs=[];
+  for(let i=1;i<g.length;i++){const d=g[i].km-g[i-1].km;if(d>0&&(!from||g[i].date>=from)&&(!to||g[i].date<=to))
+    segs.push({date:g[i].date,km:g[i].km,d,l:g[i].liters,c:g[i].cost||0})}
+  const K=segs.reduce((s,x)=>s+x.d,0),L=segs.reduce((s,x)=>s+x.l,0),C=segs.reduce((s,x)=>s+x.c,0);
+  return{segs,K,L,C,avg:K?L/K*100:null,per100:K?C/K*100:null};
+}
+function ctx(){const v=veh();return v?[v.model||v.name,v.year||""].filter(Boolean).join(" "):""}
+function openSearch(q){
+  $("#sq").value=q||"";buildLinks();$("#ds").showModal();
+}
+function buildLinks(){
+  const q=$("#sq").value.trim(),v=veh(),c=ctx(),e=encodeURIComponent;
+  const km=v?Math.max(v.km0||0,...S.entries.filter(x=>x.vid===v.id).map(x=>x.km||0)):0;
+  const prompt=`Mi ${c||"vehículo"}${km?` con ${num(km)} km`:""} tiene este problema o necesidad: ${q||"(describe aquí)"}. ¿Cuáles son las causas probables, cómo lo compruebo yo mismo y qué repuesto o reparación haría falta, con precio orientativo en España?`;
+  const full=e(`${c} ${q}`.trim()),a=(u,t,cl="")=>`<a class="btn ${cl}" href="${u}" target="_blank" rel="noopener">${t}</a>`;
+  $("#sl1").innerHTML=a(`https://www.google.com/search?q=${e(`${c} ${q} causas solución`)}`,"Google")+
+   a(`https://www.youtube.com/results?search_query=${e(`${c} ${q}`)}`,"YouTube")+
+   a(`https://claude.ai/new?q=${e(prompt)}`,"Preguntar a Claude","ai")+
+   a(`https://chatgpt.com/?q=${e(prompt)}`,"Preguntar a ChatGPT","ai")+
+   a(`https://www.google.com/search?udm=50&q=${e(prompt)}`,"IA de Google","ai");
+  $("#sl2").innerHTML=a(`https://www.google.com/search?tbm=shop&q=${full}`,"Google Shopping")+
+   a(`https://www.amazon.es/s?k=${full}`,"Amazon")+a(`https://www.ebay.es/sch/i.html?_nkw=${full}`,"eBay")+
+   a(`https://www.autodoc.es/search?keyword=${full}`,"Autodoc")+a(`https://es.wallapop.com/app/search?keywords=${full}`,"Wallapop");
+}
+$("#sq").oninput=buildLinks;$("#sg").onclick=()=>openSearch("");$("#cs").onclick=()=>$("#ds").close();
+
+function rowHtml(e,withSearch){
+  return `<div class="row t-${e.type}"><div class="ic">${ICO[e.type]}</div><div class="rb"><div class="top"><span><span class="tag ${e.type==="fail"&&e.status==="open"?"open":""}">${TYPES[e.type]}${e.type==="fail"?(e.status==="open"?" · pendiente":" · resuelta"):""}</span>${fd(e.date)}</span><span>${e.cost?eur(e.cost):""}</span></div>
+  ${e.title?`<div><b>${esc(e.title)}</b></div>`:""}
+  <div class="meta">${e.km?num(e.km)+" km":""}${e.liters?" · "+num(e.liters,2)+" L"+(e.cost?" · "+num(e.cost/e.liters,3)+" €/L":""):""}</div>
+  ${e.notes?`<div class="notes">${esc(e.notes)}</div>`:""}
+  <div class="ra">${withSearch?`<button class="g" data-s="${e.id}">🔍 Buscar causa / repuesto</button>`:""}${e.type==="fail"&&e.status==="open"?`<button class="g" data-ok="${e.id}">Marcar resuelta</button>`:""}<button class="g" data-del="${e.id}">Eliminar</button></div></div></div>`;
+}
+
+function renderStrip(){const el=$("#strip");
+  el.innerHTML=S.vehicles.map(v=>`<button class="vc ${v.id===S.cur?"on":""}" data-v="${v.id}"><span class="vi">${v.photo?`<img src="${v.photo}" alt="">`:(v.type==="moto"?"🏍️":"🚗")}</span><b>${esc(v.name)}</b></button>`).join("")+`<button class="vc add" id="addv2"><span class="vi">＋</span><b>Nuevo</b></button>`;
+  el.querySelectorAll("[data-v]").forEach(b=>b.onclick=()=>{S.cur=b.dataset.v;filter="all";save();render()});
+  $("#addv2").onclick=()=>vehForm(null)}
+function render(){
+  $("#vs").innerHTML=S.vehicles.map(v=>`<option value="${v.id}" ${v.id===S.cur?"selected":""}>${esc(v.name)}${v.plate?" · "+esc(v.plate):""}</option>`).join("");
+  renderStrip();
+  $("#nav").innerHTML=TABS.map(([k,n,i])=>`<button class="${tab===k?"on":""}" data-tab="${k}"><span>${i}</span>${n}</button>`).join("");
+  $("#nav").querySelectorAll("button").forEach(b=>b.onclick=()=>{tab=b.dataset.tab;render();scrollTo(0,0)});
+  const v=veh(),app=$("#app");
+  $("#add").style.display=v?"":"none";
+  if(!v){app.innerHTML=`<div class="welcome"><div class="big">🏍️ 🚗</div><h2>Bienvenido a tu garaje</h2><p>Añade tu coche o tu moto y controla gastos, consumo, averías y vencimientos en un solo sitio.</p><button class="p" onclick="vehForm(null)">Añadir mi primer vehículo</button></div>`;return}
+  const es=S.entries.filter(e=>e.vid===v.id).sort((a,b)=>b.date.localeCompare(a.date)||(b.km||0)-(a.km||0));
+  const maxKm=Math.max(v.km0||0,...es.map(e=>e.km||0));
+  let h="";
+  if(tab==="res"){
+    const total=es.reduce((s,e)=>s+(e.cost||0),0),yr=new Date().getFullYear();
+    const tY=es.filter(e=>e.date.startsWith(yr)).reduce((s,e)=>s+(e.cost||0),0);
+    const co=(()=>{const f=from,t=to;from=to="";const r=consumo(es);from=f;to=t;return r})();
+    const last={};es.slice().reverse().forEach(e=>{if(e.nextDate||e.nextKm)last[e.type]=e});
+    const rems=Object.values(last).map(e=>{
+      let days=null,kl=null;
+      if(e.nextDate)days=Math.round((new Date(e.nextDate+"T00:00:00")-new Date(today()+"T00:00:00"))/864e5);
+      if(e.nextKm)kl=e.nextKm-maxKm;
+      const late=(days!==null&&days<0)||(kl!==null&&kl<0),soon=!late&&((days!==null&&days<=30)||(kl!==null&&kl<=1000)),p=[];
+      if(days!==null)p.push(days<0?`hace ${-days} días`:days===0?"hoy":`en ${days} días`);
+      if(kl!==null)p.push(kl<0?`${num(-kl)} km de más`:`faltan ${num(kl)} km`);
+      return{e,late,soon,txt:p.join(" · "),s:days!==null?days:9999}}).sort((a,b)=>a.s-b.s);
+    const open=es.filter(e=>e.type==="fail"&&e.status==="open").length;
+    h=`<div class="hero">${v.photo?`<img src="${v.photo}" alt="Foto de ${esc(v.name)}">`:`<div class="ph0">${v.type==="moto"?"🏍️":"🚗"}</div>`}<div class="in"><div><strong class="vt">${esc(v.name)}</strong><small>${v.type==="moto"?"Moto":"Coche"}${v.model?" · "+esc(v.model):""}${v.year?" · "+v.year:""}</small>${v.plate?`<span class="plate">${esc(v.plate)}</span>`:""}<span class="odo">${odo(maxKm)}<b>km</b></span></div><div style="display:flex;flex-direction:column;gap:6px"><button id="upk">Actualizar km</button><button id="edv">Editar / foto</button></div></div></div>
+    <div class="qa"><button data-q="gas"><span>⛽</span>Repostaje</button><button data-q="fail"><span>⚠️</span>Avería</button><button data-q="rev"><span>🔧</span>Revisión</button><button data-q="itv"><span>📋</span>ITV</button></div><div class="dash">${gauge(co.avg)}<div class="side"><div class="stat"><span class="num">${eur(tY)}</span><span>gastado en ${yr}</span></div><div class="stat"><span class="num">${eur(total)}</span><span>gasto total</span></div></div></div>
+    ${open?`<div class="rem late" style="margin-top:10px"><div><b>${open} avería${open>1?"s":""} pendiente${open>1?"s":""}</b></div><button data-tab2="ave">Ver</button></div>`:""}
+    <h2>Próximos avisos</h2>${rems.length?rems.map(r=>`<div class="rem ${r.late?"late":r.soon?"soon":""}"><div><b>${ICO[r.e.type]} ${TYPES[r.e.type]}</b><em>${r.e.nextDate?"Vence el "+fd(r.e.nextDate):""}${r.e.nextDate&&r.e.nextKm?" · ":""}${r.e.nextKm?"a los "+num(r.e.nextKm)+" km":""}</em></div><div class="w">${r.txt}</div></div>`).join(""):`<div class="empty">Al guardar una ITV, seguro o revisión, indica la próxima fecha o los próximos km y el aviso aparecerá aquí.</div>`}
+    <div style="text-align:center;margin-top:18px"><button class="g" id="delv">Eliminar este vehículo</button></div>`;
+  }
+  if(tab==="con"){
+    const r=consumo(es);
+    h=`<h2>Consumo</h2><div class="two"><div><label for="cf">Desde</label><input type="date" id="cf" value="${from}"></div><div><label for="ct">Hasta</label><input type="date" id="ct" value="${to}"></div></div>
+    <div class="stats" style="margin-top:12px"><div class="stat"><span class="num">${r.avg?num(r.avg,2):"–"}</span><span>L/100 km (total del período)</span></div><div class="stat"><span class="num">${r.per100?num(r.per100,2):"–"}</span><span>€ cada 100 km</span></div><div class="stat"><span class="num">${num(r.K)}</span><span>km recorridos · ${num(r.L,1)} L · ${eur(r.C)}</span></div></div>
+    <h2>Por repostaje</h2>${r.segs.length?`<div class="wrap"><table><tr><th>Fecha</th><th>Km</th><th>Litros</th><th>L/100</th><th>€/100</th></tr>${r.segs.slice().reverse().map(x=>`<tr><td>${fd(x.date)}</td><td>${num(x.d)}</td><td>${num(x.l,1)}</td><td><b>${num(x.l/x.d*100,2)}</b></td><td>${x.c?num(x.c/x.d*100,2):"–"}</td></tr>`).join("")}</table></div><p class="meta">Se calcula entre repostajes consecutivos llenando el depósito. Hacen falta al menos dos repostajes con km y litros.</p>`:`<div class="empty">Añade al menos dos repostajes con kilómetros y litros para ver el consumo.</div>`}`;
+  }
+  if(tab==="ave"){
+    const f=es.filter(e=>e.type==="fail"),tot=f.reduce((s,e)=>s+(e.cost||0),0);
+    h=`<h2>Registro de averías</h2><p class="meta" style="margin-top:0">${f.length} registradas · ${eur(tot)} en reparaciones</p><button class="p" id="nf" style="width:100%;margin-bottom:12px">+ Registrar avería</button><button id="sf" style="width:100%;margin-bottom:12px">🔍 Buscar un problema o un repuesto</button>
+    ${f.length?f.map(e=>rowHtml(e,true)).join(""):`<div class="empty">Sin averías registradas.</div>`}`;
+  }
+  if(tab==="his"){
+    const shown=filter==="all"?es:es.filter(e=>e.type===filter);
+    h=`<h2>Historial</h2><div class="chips">${[["all","Todo"],...Object.entries(TYPES)].map(([k,n])=>`<button class="chip ${filter===k?"on":""}" data-f="${k}">${n}</button>`).join("")}</div>${shown.length?shown.map(e=>rowHtml(e,e.type==="fail")).join(""):`<div class="empty">No hay registros todavía.</div>`}`;
+  }
+  app.innerHTML=h;
+  const q=s=>app.querySelector(s);
+  app.querySelectorAll("[data-f]").forEach(b=>b.onclick=()=>{filter=b.dataset.f;render()});
+  app.querySelectorAll("[data-del]").forEach(b=>b.onclick=()=>{if(confirm("¿Eliminar este registro?")){S.entries=S.entries.filter(e=>e.id!==b.dataset.del);save();render()}});
+  app.querySelectorAll("[data-ok]").forEach(b=>b.onclick=()=>{const e=S.entries.find(x=>x.id===b.dataset.ok);e.status="done";save();render()});
+  app.querySelectorAll("[data-s]").forEach(b=>b.onclick=()=>{const e=S.entries.find(x=>x.id===b.dataset.s);openSearch(e.title||e.notes||"")});
+  app.querySelectorAll("[data-tab2]").forEach(b=>b.onclick=()=>{tab=b.dataset.tab2;render()});
+  if(q("#cf")){q("#cf").onchange=e=>{from=e.target.value;render()};q("#ct").onchange=e=>{to=e.target.value;render()}}
+  app.querySelectorAll("[data-q]").forEach(b=>b.onclick=()=>newEntry(b.dataset.q));
+  if(q("#nf"))q("#nf").onclick=()=>newEntry("fail");
+  if(q("#sf"))q("#sf").onclick=()=>openSearch("");
+  if(q("#upk"))q("#upk").onclick=()=>{const n=parseInt(prompt("Kilómetros actuales:",maxKm));if(n>=0){S.entries.push({id:uid(),vid:v.id,type:"other",title:"Actualización de km",date:today(),km:n,cost:0});save();render()}};
+  if(q("#edv"))q("#edv").onclick=()=>vehForm(v);
+  if(q("#delv"))q("#delv").onclick=()=>{if(confirm("¿Eliminar el vehículo y todos sus registros?")){S.entries=S.entries.filter(e=>e.vid!==v.id);S.vehicles=S.vehicles.filter(x=>x.id!==v.id);S.cur=S.vehicles[0]?.id||null;save();render()}};
+}
+
+function newEntry(type){$("#fm").reset();$("#t").value=type||"gas";$("#d").value=today();sync();$("#dg").showModal()}
+$("#add").onclick=()=>newEntry(tab==="ave"?"fail":"gas");
+$("#cx").onclick=()=>$("#dg").close();
+$("#fm").onsubmit=()=>{const f=id=>$(id).value,t=f("#t");
+  S.entries.push({id:uid(),vid:S.cur,type:t,title:f("#ti").trim(),date:f("#d")||today(),km:parseInt(f("#k"))||0,cost:parseFloat(f("#c"))||0,
+  liters:t==="gas"?parseFloat(f("#l"))||0:0,status:t==="fail"?f("#st"):"",nextDate:f("#nd"),nextKm:parseInt(f("#nk"))||0,notes:f("#n").trim()});
+  save();render()};
+
+function vehForm(v){editing=v?v.id:null;$("#fv").reset();photo=v?.photo||"";$("#vimg").src=photo;$("#vimg").style.visibility=photo?"visible":"hidden";
+  $("#vh").textContent=v?"Editar vehículo":"Nuevo vehículo";
+  if(v){$("#vn").value=v.name;$("#vm").value=v.model||"";$("#vy").value=v.year||"";$("#vt").value=v.type;$("#vp").value=v.plate||"";$("#vk").value=v.km0||""}
+  $("#dv").showModal()}
+$("#addv").onclick=()=>vehForm(null);$("#cv").onclick=()=>$("#dv").close();
+$("#vf").onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{const im=new Image();im.onload=()=>{
+  const m=700,s=Math.min(1,m/Math.max(im.width,im.height)),c=document.createElement("canvas");c.width=im.width*s;c.height=im.height*s;
+  c.getContext("2d").drawImage(im,0,0,c.width,c.height);photo=c.toDataURL("image/jpeg",.75);$("#vimg").src=photo;$("#vimg").style.visibility="visible"};im.src=r.result};r.readAsDataURL(f)};
+$("#fv").onsubmit=()=>{const d={name:$("#vn").value.trim(),model:$("#vm").value.trim(),year:parseInt($("#vy").value)||0,type:$("#vt").value,plate:$("#vp").value.trim(),km0:parseInt($("#vk").value)||0,photo};
+  if(editing)Object.assign(S.vehicles.find(x=>x.id===editing),d);else{const v={id:uid(),...d};S.vehicles.push(v);S.cur=v.id}
+  save();render()};
+$("#vs").onchange=e=>{S.cur=e.target.value;filter="all";save();render()};
+$("#bk").onclick=()=>{$("#bt").value=JSON.stringify(S);$("#cp").textContent="Copiar";$("#db").showModal()};
+$("#cb").onclick=()=>$("#db").close();
+$("#cp").onclick=async()=>{try{await navigator.clipboard.writeText($("#bt").value);$("#cp").textContent="Copiado"}catch(e){$("#bt").select()}};
+$("#rs").onclick=()=>{try{const d=JSON.parse($("#bt").value);if(!Array.isArray(d.vehicles)||!Array.isArray(d.entries))throw 0;
+  if(confirm("Se sustituirán los datos actuales. ¿Continuar?")){S=d;save();render();$("#db").close()}}catch(e){alert("El texto no es una copia de seguridad válida.")}};
+if(!S.cur&&S.vehicles[0])S.cur=S.vehicles[0].id;
+render();
+if("serviceWorker" in navigator)addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));
+</script>
+</body>
+</html>
