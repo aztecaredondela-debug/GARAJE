@@ -143,6 +143,12 @@ nav button.on{background:linear-gradient(135deg,rgba(56,189,248,.28),rgba(139,92
 .welcome .big{font-size:64px}.welcome h2{justify-content:center}.welcome h2::before{display:none}
 .welcome p{color:var(--mute);margin:0 0 18px}
 dialog{border:1px solid #2f3d75;background:linear-gradient(160deg,#16204a,#0f1630)}
+
+.fl{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.fl .f{display:inline-flex;align-items:center;border:1px solid #2f3d75;border-radius:99px;background:var(--soft);overflow:hidden}
+.fl .f button{border:0;background:none;border-radius:0;padding:6px 9px;font-size:13px}
+.doc{display:flex;gap:12px;align-items:center;width:100%;text-align:left;margin-bottom:8px;border-radius:14px;background:linear-gradient(160deg,#16204a,#121a36)}
+.doc b{display:block;word-break:break-all}.doc em{display:block;font-style:normal;color:var(--mute);font-size:13px;font-weight:400}
 </style>
 </head>
 <body>
@@ -154,6 +160,7 @@ dialog{border:1px solid #2f3d75;background:linear-gradient(160deg,#16204a,#0f163
 </main>
 <button class="p fab" id="add">+ Registro</button>
 <nav id="nav"></nav>
+<input type="file" id="fa" multiple accept="application/pdf,image/*" hidden>
 
 <dialog id="dg"><form method="dialog" id="fm" style="margin:0">
 <h2 style="margin-top:0">Nuevo registro</h2>
@@ -166,6 +173,7 @@ dialog{border:1px solid #2f3d75;background:linear-gradient(160deg,#16204a,#0f163
 <div id="sw"><label for="st">Estado</label><select id="st"><option value="open">Pendiente</option><option value="done">Resuelta</option></select></div></div>
 <div class="two"><div><label for="nd">Próxima fecha</label><input type="date" id="nd"></div>
 <div><label for="nk">Próximos km</label><input type="number" id="nk" inputmode="numeric" min="0"></div></div>
+<label for="fl">Documentos (PDF o foto)</label><input type="file" id="fl" multiple accept="application/pdf,image/*"><div class="meta" style="margin-top:3px">Recibo, condiciones generales, factura, ficha de la ITV…</div>
 <label for="n">Notas</label><textarea id="n" rows="2" placeholder="Taller, marca, síntomas…"></textarea>
 <div class="acts"><button type="button" id="cx">Cancelar</button><button type="submit" class="p">Guardar</button></div>
 </form></dialog>
@@ -193,7 +201,7 @@ dialog{border:1px solid #2f3d75;background:linear-gradient(160deg,#16204a,#0f163
 
 <dialog id="db"><div>
 <h2 style="margin-top:0">Copia de seguridad</h2>
-<p class="meta" style="margin-top:0">Los datos se guardan en este dispositivo. Copia el texto para guardarlo, o pégalo aquí para restaurar.</p>
+<p class="meta" style="margin-top:0">Los datos se guardan en este dispositivo. Copia el texto para guardarlo, o pégalo aquí para restaurar. Los documentos adjuntos no van incluidos: se quedan en este dispositivo.</p>
 <textarea id="bt" rows="7"></textarea>
 <div class="acts"><button id="cb">Cerrar</button><div><button id="cp">Copiar</button><button class="p" id="rs">Restaurar</button></div></div>
 </div></dialog>
@@ -247,12 +255,26 @@ function buildLinks(){
 }
 $("#sq").oninput=buildLinks;$("#sg").onclick=()=>openSearch("");$("#cs").onclick=()=>$("#ds").close();
 
+let _db,attId=null;
+const idb=()=>_db||(_db=new Promise((res,rej)=>{const r=indexedDB.open("garaje-files",1);r.onupgradeneeded=()=>r.result.createObjectStore("f");r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)}));
+const putFile=async(id,b)=>{const d=await idb();return new Promise((res,rej)=>{const t=d.transaction("f","readwrite");t.objectStore("f").put(b,id);t.oncomplete=res;t.onerror=()=>rej(t.error)})};
+const getFile=async id=>{const d=await idb();return new Promise((res,rej)=>{const r=d.transaction("f").objectStore("f").get(id);r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)})};
+const delFile=async id=>{try{const d=await idb();d.transaction("f","readwrite").objectStore("f").delete(id)}catch(e){}};
+async function storeFiles(list){const out=[];for(const f of list){
+  if(f.size>25*1048576){alert(`“${f.name}” pesa más de 25 MB y no se ha guardado.`);continue}
+  try{const id=uid();await putFile(id,f);out.push({id,name:f.name,type:f.type})}catch(e){alert(`No se pudo guardar “${f.name}”.`)}}return out}
+async function openFile(id){try{const b=await getFile(id);if(!b){alert("No se encuentra el archivo en este dispositivo.");return}
+  const u=URL.createObjectURL(b),a=document.createElement("a");a.href=u;a.target="_blank";a.rel="noopener";a.click();setTimeout(()=>URL.revokeObjectURL(u),60000)}catch(e){alert("No se pudo abrir el archivo.")}}
+const fico=f=>f.type==="application/pdf"?"📄":"🖼️";
+const filesHtml=e=>(e.files&&e.files.length)?`<div class="fl">${e.files.map(f=>`<span class="f"><button data-file="${f.id}">${fico(f)} ${esc(f.name.length>26?f.name.slice(0,23)+"…":f.name)}</button><button data-rf="${e.id}" data-fid="${f.id}" aria-label="Quitar documento">✕</button></span>`).join("")}</div>`:"";
+const docsHtml=es=>{const d=es.flatMap(e=>(e.files||[]).map(f=>({e,f})));
+  return `<h2>Documentos</h2>`+(d.length?d.map(({e,f})=>`<button class="doc" data-file="${f.id}"><span style="font-size:26px">${fico(f)}</span><span><b>${esc(f.name)}</b><em>${ICO[e.type]} ${TYPES[e.type]} · ${fd(e.date)}</em></span></button>`).join(""):`<div class="empty">Adjunta el recibo o las condiciones del seguro, la ficha de la ITV, facturas del taller… y los tendrás todos aquí.</div>`)};
 function rowHtml(e,withSearch){
   return `<div class="row t-${e.type}"><div class="ic">${ICO[e.type]}</div><div class="rb"><div class="top"><span><span class="tag ${e.type==="fail"&&e.status==="open"?"open":""}">${TYPES[e.type]}${e.type==="fail"?(e.status==="open"?" · pendiente":" · resuelta"):""}</span>${fd(e.date)}</span><span>${e.cost?eur(e.cost):""}</span></div>
   ${e.title?`<div><b>${esc(e.title)}</b></div>`:""}
   <div class="meta">${e.km?num(e.km)+" km":""}${e.liters?" · "+num(e.liters,2)+" L"+(e.cost?" · "+num(e.cost/e.liters,3)+" €/L":""):""}</div>
   ${e.notes?`<div class="notes">${esc(e.notes)}</div>`:""}
-  <div class="ra">${withSearch?`<button class="g" data-s="${e.id}">🔍 Buscar causa / repuesto</button>`:""}${e.type==="fail"&&e.status==="open"?`<button class="g" data-ok="${e.id}">Marcar resuelta</button>`:""}<button class="g" data-del="${e.id}">Eliminar</button></div></div></div>`;
+  ${filesHtml(e)}<div class="ra"><button class="g" data-att="${e.id}">📎 Adjuntar</button>${withSearch?`<button class="g" data-s="${e.id}">🔍 Buscar causa / repuesto</button>`:""}${e.type==="fail"&&e.status==="open"?`<button class="g" data-ok="${e.id}">Marcar resuelta</button>`:""}<button class="g" data-del="${e.id}">Eliminar</button></div></div></div>`;
 }
 
 function renderStrip(){const el=$("#strip");
@@ -288,6 +310,7 @@ function render(){
     <div class="qa"><button data-q="gas"><span>⛽</span>Repostaje</button><button data-q="fail"><span>⚠️</span>Avería</button><button data-q="rev"><span>🔧</span>Revisión</button><button data-q="itv"><span>📋</span>ITV</button></div><div class="dash">${gauge(co.avg)}<div class="side"><div class="stat"><span class="num">${eur(tY)}</span><span>gastado en ${yr}</span></div><div class="stat"><span class="num">${eur(total)}</span><span>gasto total</span></div></div></div>
     ${open?`<div class="rem late" style="margin-top:10px"><div><b>${open} avería${open>1?"s":""} pendiente${open>1?"s":""}</b></div><button data-tab2="ave">Ver</button></div>`:""}
     <h2>Próximos avisos</h2>${rems.length?rems.map(r=>`<div class="rem ${r.late?"late":r.soon?"soon":""}"><div><b>${ICO[r.e.type]} ${TYPES[r.e.type]}</b><em>${r.e.nextDate?"Vence el "+fd(r.e.nextDate):""}${r.e.nextDate&&r.e.nextKm?" · ":""}${r.e.nextKm?"a los "+num(r.e.nextKm)+" km":""}</em></div><div class="w">${r.txt}</div></div>`).join(""):`<div class="empty">Al guardar una ITV, seguro o revisión, indica la próxima fecha o los próximos km y el aviso aparecerá aquí.</div>`}
+    ${docsHtml(es)}
     <div style="text-align:center;margin-top:18px"><button class="g" id="delv">Eliminar este vehículo</button></div>`;
   }
   if(tab==="con"){
@@ -308,7 +331,10 @@ function render(){
   app.innerHTML=h;
   const q=s=>app.querySelector(s);
   app.querySelectorAll("[data-f]").forEach(b=>b.onclick=()=>{filter=b.dataset.f;render()});
-  app.querySelectorAll("[data-del]").forEach(b=>b.onclick=()=>{if(confirm("¿Eliminar este registro?")){S.entries=S.entries.filter(e=>e.id!==b.dataset.del);save();render()}});
+  app.querySelectorAll("[data-del]").forEach(b=>b.onclick=()=>{if(confirm("¿Eliminar este registro?")){const x=S.entries.find(e=>e.id===b.dataset.del);(x?.files||[]).forEach(f=>delFile(f.id));S.entries=S.entries.filter(e=>e.id!==b.dataset.del);save();render()}});
+  app.querySelectorAll("[data-file]").forEach(b=>b.onclick=()=>openFile(b.dataset.file));
+  app.querySelectorAll("[data-rf]").forEach(b=>b.onclick=async()=>{if(!confirm("¿Quitar este documento?"))return;const e=S.entries.find(x=>x.id===b.dataset.rf);e.files=e.files.filter(x=>x.id!==b.dataset.fid);await delFile(b.dataset.fid);save();render()});
+  app.querySelectorAll("[data-att]").forEach(b=>b.onclick=()=>{attId=b.dataset.att;$("#fa").click()});
   app.querySelectorAll("[data-ok]").forEach(b=>b.onclick=()=>{const e=S.entries.find(x=>x.id===b.dataset.ok);e.status="done";save();render()});
   app.querySelectorAll("[data-s]").forEach(b=>b.onclick=()=>{const e=S.entries.find(x=>x.id===b.dataset.s);openSearch(e.title||e.notes||"")});
   app.querySelectorAll("[data-tab2]").forEach(b=>b.onclick=()=>{tab=b.dataset.tab2;render()});
@@ -318,15 +344,15 @@ function render(){
   if(q("#sf"))q("#sf").onclick=()=>openSearch("");
   if(q("#upk"))q("#upk").onclick=()=>{const n=parseInt(prompt("Kilómetros actuales:",maxKm));if(n>=0){S.entries.push({id:uid(),vid:v.id,type:"other",title:"Actualización de km",date:today(),km:n,cost:0});save();render()}};
   if(q("#edv"))q("#edv").onclick=()=>vehForm(v);
-  if(q("#delv"))q("#delv").onclick=()=>{if(confirm("¿Eliminar el vehículo y todos sus registros?")){S.entries=S.entries.filter(e=>e.vid!==v.id);S.vehicles=S.vehicles.filter(x=>x.id!==v.id);S.cur=S.vehicles[0]?.id||null;save();render()}};
+  if(q("#delv"))q("#delv").onclick=()=>{if(confirm("¿Eliminar el vehículo y todos sus registros?")){es.forEach(x=>(x.files||[]).forEach(f=>delFile(f.id)));S.entries=S.entries.filter(e=>e.vid!==v.id);S.vehicles=S.vehicles.filter(x=>x.id!==v.id);S.cur=S.vehicles[0]?.id||null;save();render()}};
 }
 
 function newEntry(type){$("#fm").reset();$("#t").value=type||"gas";$("#d").value=today();sync();$("#dg").showModal()}
 $("#add").onclick=()=>newEntry(tab==="ave"?"fail":"gas");
 $("#cx").onclick=()=>$("#dg").close();
-$("#fm").onsubmit=()=>{const f=id=>$(id).value,t=f("#t");
+$("#fm").onsubmit=async()=>{const f=id=>$(id).value,t=f("#t"),fl=await storeFiles([...$("#fl").files]);
   S.entries.push({id:uid(),vid:S.cur,type:t,title:f("#ti").trim(),date:f("#d")||today(),km:parseInt(f("#k"))||0,cost:parseFloat(f("#c"))||0,
-  liters:t==="gas"?parseFloat(f("#l"))||0:0,status:t==="fail"?f("#st"):"",nextDate:f("#nd"),nextKm:parseInt(f("#nk"))||0,notes:f("#n").trim()});
+  liters:t==="gas"?parseFloat(f("#l"))||0:0,status:t==="fail"?f("#st"):"",nextDate:f("#nd"),nextKm:parseInt(f("#nk"))||0,notes:f("#n").trim(),files:fl});
   save();render()};
 
 function vehForm(v){editing=v?v.id:null;$("#fv").reset();photo=v?.photo||"";$("#vimg").src=photo;$("#vimg").style.visibility=photo?"visible":"hidden";
@@ -348,6 +374,8 @@ $("#rs").onclick=()=>{try{const d=JSON.parse($("#bt").value);if(!Array.isArray(d
   if(confirm("Se sustituirán los datos actuales. ¿Continuar?")){S=d;save();render();$("#db").close()}}catch(e){alert("El texto no es una copia de seguridad válida.")}};
 if(!S.cur&&S.vehicles[0])S.cur=S.vehicles[0].id;
 render();
+$("#fa").onchange=async e=>{const en=S.entries.find(x=>x.id===attId);if(!en)return;const m=await storeFiles([...e.target.files]);en.files=(en.files||[]).concat(m);e.target.value="";save();render()};
+try{navigator.storage?.persist?.()}catch(e){}
 if("serviceWorker" in navigator)addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));
 </script>
 </body>
