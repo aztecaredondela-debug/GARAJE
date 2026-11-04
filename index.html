@@ -162,11 +162,13 @@ dialog{border:1px solid #2f3d75;background:linear-gradient(160deg,#16204a,#0f163
 .sb{display:flex;gap:8px}.sb input{flex:1}
 .qa{grid-template-columns:repeat(5,1fr)!important}.qa button{font-size:11.5px!important;padding:10px 0!important}.qa button span{font-size:22px!important}
 nav button{font-size:11px}
+.logo{font:800 22px system-ui,sans-serif;font-style:normal}
+.fab{width:56px;height:56px;padding:0!important;border-radius:50%;font-size:32px!important;line-height:1;display:grid;place-items:center}
 </style>
 </head>
 <body>
 <main>
-<header><h1><span class="logo">⚙</span><span id="ttl"></span></h1><div><button class="g" data-a="sg" aria-label="Search">🔍</button><button class="g" data-a="cfg" aria-label="Settings">⚙️</button></div></header>
+<header><h1><span class="logo">G</span><span id="ttl"></span></h1><div><button class="g" data-a="sg" aria-label="Search">🔍</button><button class="g" data-a="cfg" aria-label="Settings">⚙️</button></div></header>
 <div id="strip" class="strip"></div>
 <div id="app"></div>
 </main>
@@ -384,10 +386,10 @@ async function importAll(file){try{const d=JSON.parse(await file.text()),dd=d.da
   const cfg=dd.cfg||S.cfg;S=dd;S.cfg=Object.assign(defCfg(),cfg);save();build();render();alert(t("Copia restaurada."))}catch(e){alert(t("El archivo no es una copia válida."))}}
 // pantalla principal
 function render(){
-  $("#add").textContent="+ "+t("Registro");
+  $("#add").textContent="+";$("#add").setAttribute("aria-label",t("Registro"));
   $("#strip").innerHTML=S.vehicles.map(v=>`<button class="vc ${v.id===S.cur?"on":""}" data-a="veh" data-id="${v.id}"><span class="vi">${v.photo?`<img src="${v.photo}" alt="">`:(v.type==="moto"?"🏍️":"🚗")}</span><b>${esc(v.name)}</b></button>`).join("")+`<button class="vc add" data-a="addv"><span class="vi">＋</span><b>${t("Nuevo")}</b></button>`;
   $("#nav").innerHTML=TABS.map(([k,n,i])=>`<button class="${tab===k?"on":""}" data-a="tab" data-id="${k}"><span>${i}</span>${t(n)}</button>`).join("");
-  const v=veh(),app=$("#app");$("#add").style.display=v?"":"none";
+  const v=veh(),app=$("#app");$("#add").style.display=v&&(tab==="con"||tab==="his")?"":"none";
   if(!v){app.innerHTML=`<div class="welcome"><div class="big">🏍️ 🚗</div><h2>${t("Bienvenido a tu garaje")}</h2><p>${t("Añade tu coche o tu moto y controla gastos, consumo, averías y vencimientos en un solo sitio.")}</p><button class="p" data-a="addv">${t("Añadir mi primer vehículo")}</button></div>`;return}
   const es=S.entries.filter(e=>e.vid===v.id).sort((a,b)=>b.date.localeCompare(a.date)||(b.km||0)-(a.km||0));
   const maxKm=Math.max(v.km0||0,...es.map(e=>e.km||0));let h="";
