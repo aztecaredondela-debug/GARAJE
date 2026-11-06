@@ -256,6 +256,7 @@ const T={
 "Guarda todo (datos, fotos y documentos) en un archivo y restáurala cuando quieras.":["Saves everything (data, photos and documents) in one file you can restore anytime.","Guarda tudo (dados, fotos e documentos) num ficheiro e restaure quando quiser.","Enregistre tout (données, photos et documents) dans un fichier à restaurer quand vous voulez.","Speichert alles (Daten, Fotos und Dokumente) in einer Datei, die du jederzeit wiederherstellen kannst."],
 "Exportar copia":["Export backup","Exportar cópia","Exporter la sauvegarde","Sicherung exportieren"],"Importar copia":["Import backup","Importar cópia","Importer la sauvegarde","Sicherung importieren"],
 "Se sustituirán los datos actuales. ¿Continuar?":["Current data will be replaced. Continue?","Os dados atuais serão substituídos. Continuar?","Les données actuelles seront remplacées. Continuer ?","Die aktuellen Daten werden ersetzt. Fortfahren?"],
+"Algunos enlaces de tiendas son de afiliación: si compras, la app puede recibir una comisión sin coste extra para ti.":["Some store links are affiliate links: if you buy, the app may earn a commission at no extra cost to you.","Alguns links de lojas são de afiliação: se comprar, a app pode receber uma comissão sem custo extra para si.","Certains liens vers des boutiques sont des liens d’affiliation : si vous achetez, l’appli peut recevoir une commission sans frais supplémentaires pour vous.","Einige Shop-Links sind Affiliate-Links: Wenn du kaufst, erhält die App möglicherweise eine Provision – ohne Mehrkosten für dich."],
 "Copia restaurada.":["Backup restored.","Cópia restaurada.","Sauvegarde restaurée.","Sicherung wiederhergestellt."],"El archivo no es una copia válida.":["This file is not a valid backup.","O ficheiro não é uma cópia válida.","Ce fichier n’est pas une sauvegarde valide.","Die Datei ist keine gültige Sicherung."],
 "“{0}” pesa más de 25 MB y no se ha guardado.":["“{0}” is over 25 MB and was not saved.","“{0}” tem mais de 25 MB e não foi guardado.","« {0} » dépasse 25 Mo et n’a pas été enregistré.","„{0}“ ist größer als 25 MB und wurde nicht gespeichert."],
 "No se pudo guardar “{0}”.":["Could not save “{0}”.","Não foi possível guardar “{0}”.","Impossible d’enregistrer « {0} ».","„{0}“ konnte nicht gespeichert werden."],
@@ -269,6 +270,18 @@ const ty=k=>t(TYPES[k]);
 const TABS=[["res","Inicio","🏁"],["con","Consumo","⛽"],["ave","Averías","🔧"],["rep","Repuestos","🛒"],["his","Historial","🗂️"]];
 const CATS=[["🛑","Frenos"],["🛢️","Aceite y filtros"],["🛞","Neumáticos"],["🔋","Batería"],["⛓️","Correa de distribución"],["💡","Bombillas y luces"],["🌧️","Escobillas"],["🔩","Amortiguadores"],["⚙️","Embrague"],["❄️","Refrigeración"],["💨","Escape"],["🏍️","Kit de arrastre"]];
 const SH={es:{az:"amazon.es",eb:"ebay.es",ad:"autodoc.es",wp:"es.wallapop.com"},en:{az:"amazon.com",eb:"ebay.com",ad:"autodoc.co.uk"},pt:{az:"amazon.com.br",eb:"ebay.com",ad:"autodoc.pt"},fr:{az:"amazon.fr",eb:"ebay.fr",ad:"autodoc.fr"},de:{az:"amazon.de",eb:"ebay.de",ad:"autodoc.de"}};
+// ===== AFILIACIÓN: rellena estos datos cuando te aprueben en cada programa. Vacío = enlaces normales =====
+const AFF={
+  amazonTags:{},   // un tag por tienda, p. ej. {"amazon.es":"tuid-21","amazon.com":"tuid-20"}
+  ebayQuery:{},    // parámetros de eBay Partner Network, p. ej. {"ebay.es":"mkcid=1&mkrid=...&campid=...&toolid=10001&mkevt=1"}
+  awin:{affid:"",mids:{"autodoc.es":"120163"}}  // affid = tu ID de editor en Awin; verifica el mid de Autodoc en tu panel
+};
+const hasAff=()=>Object.keys(AFF.amazonTags).length>0||Object.keys(AFF.ebayQuery).length>0||!!AFF.awin.affid;
+function aff(host,u){try{
+  if(host.startsWith("amazon.")&&AFF.amazonTags[host])return u+"&tag="+encodeURIComponent(AFF.amazonTags[host]);
+  if(host.startsWith("ebay.")&&AFF.ebayQuery[host])return u+"&"+AFF.ebayQuery[host];
+  if(host.startsWith("autodoc.")&&AFF.awin.affid&&AFF.awin.mids[host])return "https://www.awin1.com/cread.php?awinmid="+AFF.awin.mids[host]+"&awinaffid="+encodeURIComponent(AFF.awin.affid)+"&ued="+encodeURIComponent(u);
+}catch(e){}return u}
 // utilidades y unidades (los datos se guardan siempre en km y litros)
 const save=()=>{try{localStorage.setItem("garaje.v1",JSON.stringify(S));return true}catch(e){alert("Storage full / Sin espacio");return false}};
 const uid=()=>Math.random().toString(36).slice(2,10);
@@ -341,7 +354,7 @@ function build(){
   <div class="acts"><button type="button" data-a="close" data-id="dv">${t("Cancelar")}</button><button class="p">${t("Guardar vehículo")}</button></div></form>`;
   $("#ds").innerHTML=`<div><h2 style="margin-top:0">${t("Buscar avería o repuesto")}</h2><label for="sq">${t("¿Qué pasa o qué necesitas?")}</label><input id="sq" placeholder="${t("Ej.: ruido al frenar, pastillas de freno, testigo motor…")}">
   <h2 style="font-size:17px">${t("Diagnóstico con buscador o IA")}</h2><div id="sl1"></div><h2 style="font-size:17px">${t("Comprar repuesto")}</h2><div id="sl2"></div>
-  <p class="meta">${t("Se abre en otra pestaña con tu vehículo ya incluido en la búsqueda.")}</p><div class="acts"><span></span><button data-a="close" data-id="ds">${t("Cerrar")}</button></div></div>`;
+  <p class="meta">${t("Se abre en otra pestaña con tu vehículo ya incluido en la búsqueda.")}</p><p class="meta" id="disc"></p><div class="acts"><span></span><button data-a="close" data-id="ds">${t("Cerrar")}</button></div></div>`;
   $("#dc").innerHTML=`<div><h2 style="margin-top:0">${t("Ajustes")}</h2>
   <label for="sl">${t("Idioma")}</label><select id="sl" data-set="lang">${Object.entries(LANGS).map(([k,v])=>`<option value="${k}" ${S.cfg.lang===k?"selected":""}>${v}</option>`).join("")}</select>
   <label for="su">${t("Unidades")}</label><select id="su" data-set="units">${[["metric","Métrico (km, L)"],["us","EE. UU. (mi, gal)"],["uk","Reino Unido (mi, L)"]].map(([k,v])=>`<option value="${k}" ${S.cfg.units===k?"selected":""}>${t(v)}</option>`).join("")}</select>
@@ -371,9 +384,9 @@ function buildLinks(){const q=$("#sq").value.trim(),v=veh(),e=encodeURIComponent
   const c=v?[v.model||v.name,v.year||""].filter(Boolean).join(" "):"";
   const km=v?Math.max(v.km0||0,...S.entries.filter(x=>x.vid===v.id).map(x=>x.km||0)):0;
   const prompt=t("Mi {0}{1} tiene este problema o necesidad: {2}. ¿Cuáles son las causas probables, cómo lo compruebo yo mismo y qué repuesto o reparación haría falta, con precio orientativo?",c||t(v&&v.type==="moto"?"Moto":"Coche").toLowerCase(),km?` (${num(toD(km))} ${dU()})`:"",q||"…");
-  const full=e(`${c} ${q}`.trim()),a=(u,n,cl="")=>`<a class="btn ${cl}" href="${u}" target="_blank" rel="noopener">${n}</a>`;
+  const full=e(`${c} ${q}`.trim()),a=(u,n,cl="")=>`<a class="btn ${cl}" href="${u}" target="_blank" rel="sponsored noopener">${n}</a>`;
   $("#sl1").innerHTML=a(`https://www.google.com/search?q=${full}`,"Google")+a(`https://www.youtube.com/results?search_query=${full}`,"YouTube")+a(`https://claude.ai/new?q=${e(prompt)}`,t("Preguntar a Claude"),"ai")+a(`https://chatgpt.com/?q=${e(prompt)}`,t("Preguntar a ChatGPT"),"ai")+a(`https://www.google.com/search?udm=50&q=${e(prompt)}`,t("IA de Google"),"ai");
-  $("#sl2").innerHTML=a(`https://www.google.com/search?tbm=shop&q=${full}`,"Google Shopping")+a(`https://www.${sh.az}/s?k=${full}`,"Amazon")+a(`https://www.${sh.eb}/sch/i.html?_nkw=${full}`,"eBay")+a(`https://www.${sh.ad}/search?keyword=${full}`,"Autodoc")+(sh.wp?a(`https://${sh.wp}/app/search?keywords=${full}`,"Wallapop"):"")}
+  $("#sl2").innerHTML=a(`https://www.google.com/search?tbm=shop&q=${full}`,"Google Shopping")+a(aff(sh.az,`https://www.${sh.az}/s?k=${full}`),"Amazon")+a(aff(sh.eb,`https://www.${sh.eb}/sch/i.html?_nkw=${full}`),"eBay")+a(aff(sh.ad,`https://www.${sh.ad}/search?keyword=${full}`),"Autodoc")+(sh.wp?a(`https://${sh.wp}/app/search?keywords=${full}`,"Wallapop"):"");$("#disc").textContent=hasAff()?t("Algunos enlaces de tiendas son de afiliación: si compras, la app puede recibir una comisión sin coste extra para ti."):""}
 // copia de seguridad en archivo
 async function exportAll(){const files={};
   for(const e of S.entries)for(const f of e.files||[]){const b=await getFile(f.id);if(b)files[f.id]=await new Promise(r=>{const x=new FileReader();x.onload=()=>r(x.result);x.readAsDataURL(b)})}
