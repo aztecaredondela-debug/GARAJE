@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Mi garaje</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#090d1a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);
+--bg:#ecefee;--sf:#fff;--ink:#17232b;--mute:#5f6f78;--line:#d3dad9;--acc:#0b7a6a;--ai:#fff;--warn:#c2410c;--soft:#e1ece9}
+@media (prefers-color-scheme:dark){:root{color-scheme:dark;--bg:#10181d;--sf:#18232a;--ink:#e8eeee;--mute:#93a4ab;--line:#2a3941;--acc:#3cc2aa;--ai:#07201b;--warn:#fb923c;--soft:#1d2f33}}
+*,*::before,*::after{box-sizing:border-box}
+html{height:100%}
+body{margin:0;min-height:100%;background:var(--bg);color:var(--ink);font:16px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+main{max-width:720px;margin:0 auto;padding:14px 14px 150px}
+h1,h2,.num{font-family:"Arial Narrow","Roboto Condensed",system-ui,sans-serif;font-weight:700;font-stretch:condensed}
+h1{font-size:26px;margin:0}h2{font-size:20px;margin:22px 0 8px}
+header{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px}
+select,input,textarea,button{font:inherit;color:inherit}
+select,input,textarea{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:8px;background:var(--sf)}
+:focus-visible{outline:3px solid var(--acc);outline-offset:1px}
+button{cursor:pointer;border:1px solid var(--line);background:var(--sf);border-radius:8px;padding:10px 14px;font-weight:600}
+button.p{background:var(--acc);color:var(--ai);border-color:var(--acc)}
+button.g{border:0;background:none;color:var(--mute);padding:6px 8px}
+a.btn{display:inline-block;text-decoration:none;color:var(--ink);border:1px solid var(--line);background:var(--sf);border-radius:8px;padding:9px 12px;font-weight:600;font-size:15px;margin:0 6px 6px 0}
+a.btn.ai{border-color:var(--acc);color:var(--acc)}
+.veh{display:flex;gap:8px}.veh select{flex:1}
+.hero{position:relative;border-radius:14px;overflow:hidden;margin:12px 0;background:var(--ink);color:var(--bg);min-height:150px;display:flex;align-items:flex-end}
+.hero img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.55}
+.hero .in{position:relative;padding:16px 18px;width:100%;display:flex;justify-content:space-between;align-items:flex-end;gap:10px;background:linear-gradient(transparent,rgba(0,0,0,.6));color:#fff}
+.hero .num{font-size:44px;line-height:1}.hero small{opacity:.85;display:block}
+.hero button{background:rgba(0,0,0,.35);color:#fff;border-color:rgba(255,255,255,.6)}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.stat{background:var(--sf);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.stat .num{font-size:24px;line-height:1.1;display:block}.stat span{color:var(--mute);font-size:13px}
+.rem{background:var(--sf);border:1px solid var(--line);border-left:6px solid var(--acc);border-radius:10px;padding:10px 12px;margin-bottom:8px;display:flex;justify-content:space-between;gap:10px}
+.rem.late{border-left-color:var(--warn)}.rem.soon{border-left-color:#d4a017}
+.rem em{font-style:normal;color:var(--mute);font-size:14px;display:block}.rem .w{text-align:right;font-weight:600}.late .w{color:var(--warn)}
+.chips{display:flex;gap:6px;overflow-x:auto;padding-bottom:6px;margin-bottom:8px}
+.chip{white-space:nowrap;border-radius:99px;padding:6px 12px;font-size:14px}.chip.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.row{background:var(--sf);border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin-bottom:8px}
+.top{display:flex;justify-content:space-between;gap:10px;font-weight:600}
+.meta{color:var(--mute);font-size:14px}.notes{margin-top:4px;font-size:14px;white-space:pre-wrap}
+.tag{display:inline-block;background:var(--soft);color:var(--acc);border-radius:6px;padding:0 7px;font-size:13px;margin-right:6px;font-weight:600}
+.tag.open{background:var(--warn);color:#fff}
+.empty{text-align:center;color:var(--mute);padding:26px 10px;border:1px dashed var(--line);border-radius:10px}
+.ra{display:flex;justify-content:flex-end;gap:6px;flex-wrap:wrap;margin-top:6px}
+table{width:100%;border-collapse:collapse;font-size:14px}th,td{padding:6px 4px;text-align:right;border-bottom:1px solid var(--line)}th:first-child,td:first-child{text-align:left}
+.wrap{overflow-x:auto}
+nav{position:fixed;left:0;right:0;bottom:0;display:flex;background:var(--sf);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom,0px);z-index:5}
+nav button{flex:1;border:0;border-radius:0;background:none;padding:12px 2px;font-size:14px;color:var(--mute)}
+nav button.on{color:var(--acc);box-shadow:inset 0 3px 0 var(--acc)}
+.fab{position:fixed;right:14px;bottom:calc(62px + env(safe-area-inset-bottom,0px));padding:13px 18px;border-radius:99px;box-shadow:0 4px 14px rgba(0,0,0,.3);z-index:6}
+dialog{border:0;border-radius:14px;padding:16px;width:min(520px,94vw);background:var(--sf);color:var(--ink);max-height:92vh}
+dialog::backdrop{background:rgba(0,0,0,.5)}
+label{display:block;font-size:14px;color:var(--mute);margin:9px 0 3px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.acts{display:flex;justify-content:space-between;gap:8px;margin-top:14px}.acts div{display:flex;gap:8px}
+.ph{display:flex;gap:10px;align-items:center}.ph img{width:80px;height:56px;object-fit:cover;border-radius:8px;background:var(--line)}
+
+body{background:radial-gradient(900px 320px at 50% -90px,rgba(45,212,176,.22),transparent),var(--bg);background-attachment:fixed}
+.logo{display:inline-grid;place-items:center;width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,#2dd4b0,#0b7a6a);color:#04211c;font-size:20px;margin-right:8px;vertical-align:middle}
+.hero{min-height:210px;border-radius:22px;border:1px solid rgba(255,255,255,.08);box-shadow:0 8px 24px rgba(0,0,0,.28);background:#0e1418}
+.hero img{opacity:.8}
+.hero .in{padding:60px 18px 16px;background:linear-gradient(transparent,rgba(5,10,12,.88));align-items:flex-end}
+.hero small{font-weight:600;letter-spacing:.2px}
+.hero button{backdrop-filter:blur(6px);font-size:13px;padding:7px 11px}
+.ph0{position:absolute;inset:0;display:grid;place-items:center;font-size:92px;padding-bottom:40px;background:radial-gradient(circle at 70% 25%,#1f5a52,#0e1418 70%)}
+.odo{display:inline-flex;align-items:center;margin-top:6px;font:700 28px ui-monospace,"SF Mono",Menlo,Consolas,monospace}
+.odo i{font-style:normal;width:.72em;text-align:center;margin-right:3px;padding:3px 0;border-radius:5px;background:linear-gradient(#000,#2a2f33 50%,#000);border:1px solid #3b4247;box-shadow:inset 0 0 6px rgba(0,0,0,.8)}
+.odo b{font:600 14px system-ui,sans-serif;margin-left:6px;opacity:.9}
+.dash{display:grid;grid-template-columns:1.15fr 1fr;gap:10px}
+.gauge{position:relative;background:linear-gradient(160deg,#16262c,#0b1317);color:#fff;border-radius:18px;padding:14px 10px 12px;border:1px solid rgba(255,255,255,.08)}
+.gauge svg{width:100%;display:block}
+.gv{position:absolute;left:0;right:0;bottom:12px;text-align:center}
+.gv .num{font-size:34px;line-height:1;display:block}.gv small{opacity:.7;font-size:12px}
+.side{display:grid;gap:10px}
+.stat{border-radius:16px;display:flex;flex-direction:column;justify-content:center;border-left:4px solid var(--acc)}
+.stat .num{font-size:26px}
+.rem{border-radius:14px}
+.row{display:flex;gap:12px;border-radius:14px}
+.rb{flex:1;min-width:0}
+.ic{width:44px;height:44px;flex:none;border-radius:13px;display:grid;place-items:center;font-size:22px;background:color-mix(in srgb,var(--c) 18%,transparent);border:1px solid color-mix(in srgb,var(--c) 45%,transparent)}
+.t-gas{--c:#2dd4b0}.t-rev{--c:#60a5fa}.t-tyre{--c:#a78bfa}.t-fail{--c:#f97316}.t-ins{--c:#34d399}.t-itv{--c:#fbbf24}.t-other{--c:#94a3b8}
+.tag{background:color-mix(in srgb,var(--c,#0b7a6a) 18%,transparent);color:var(--ink)}
+.tag.open{background:var(--warn);color:#fff}
+.empty{border-radius:16px;font-size:15px;padding:30px 14px}
+nav{border-radius:20px 20px 0 0;box-shadow:0 -6px 20px rgba(0,0,0,.18)}
+nav button{font-size:12px;padding:8px 2px 10px}
+nav button span{display:block;font-size:21px;line-height:1.2;filter:grayscale(1);opacity:.7}
+nav button.on{box-shadow:none;font-weight:700}
+nav button.on span{filter:none;opacity:1;transform:translateY(-2px)}
+.fab{background:linear-gradient(135deg,#2dd4b0,#0f9a84);color:#04211c;border:0;font-size:16px}
+button.p{background:linear-gradient(135deg,#2dd4b0,#0f9a84);color:#04211c;border-color:transparent}
+.chip.on{background:var(--acc);color:var(--ai);border-color:var(--acc)}
+@media (prefers-reduced-motion:no-preference){.gauge path:nth-of-type(2){animation:g 1s ease-out}@keyframes g{from{stroke-dasharray:0 188.5}}}
+
+:root{color-scheme:dark;--bg:#090d1a;--sf:#131b33;--ink:#eef2ff;--mute:#8b97bd;--line:#26315a;--acc:#38bdf8;--ai:#04121f;--warn:#fb923c;--soft:#1a2547}
+body{background:radial-gradient(700px 380px at 105% -60px,rgba(139,92,246,.38),transparent),radial-gradient(600px 360px at -10% 8%,rgba(56,189,248,.22),transparent),var(--bg);background-attachment:fixed}
+main{padding-bottom:180px}
+h1{font-style:italic;font-weight:800;font-size:28px;letter-spacing:-.3px}
+h2{display:flex;align-items:center;gap:8px;font-size:21px;font-style:italic}
+h2::before{content:"";width:5px;height:20px;border-radius:3px;background:linear-gradient(#38bdf8,#8b5cf6)}
+.logo{background:linear-gradient(135deg,#38bdf8,#8b5cf6);color:#fff;box-shadow:0 0 16px rgba(139,92,246,.6);font-style:normal}
+.veh{display:none}
+.strip{display:flex;gap:10px;overflow-x:auto;padding:4px 2px 10px;scroll-snap-type:x mandatory}
+.vc{flex:none;scroll-snap-align:start;display:flex;align-items:center;gap:8px;padding:5px 16px 5px 5px;border-radius:99px;background:var(--sf);border:1px solid var(--line)}
+.vc.on{border-color:#38bdf8;box-shadow:0 0 0 2px rgba(56,189,248,.3),0 0 20px rgba(139,92,246,.4)}
+.vi{width:38px;height:38px;border-radius:50%;overflow:hidden;display:grid;place-items:center;background:var(--soft);font-size:19px}.vi img{width:100%;height:100%;object-fit:cover}
+.vc.add{border-style:dashed;color:var(--mute)}
+.hero{min-height:270px;border-radius:26px;border:1px solid rgba(125,211,252,.35);box-shadow:0 0 0 1px rgba(139,92,246,.25),0 14px 40px rgba(56,189,248,.18)}
+.hero img{opacity:.95}
+.hero .in{padding:90px 18px 16px;background:linear-gradient(transparent,rgba(9,13,26,.95) 70%)}
+.vt{display:block;font:italic 800 30px/1 "Arial Narrow",system-ui,sans-serif;letter-spacing:-.4px;text-shadow:0 2px 12px rgba(0,0,0,.6)}
+.hero small{display:block;margin-top:4px;opacity:.85}
+.plate{position:relative;display:inline-block;margin-top:8px;background:#fff;color:#111;border:2px solid #111;border-radius:6px;padding:1px 10px 1px 24px;font:700 14px ui-monospace,Menlo,Consolas,monospace;letter-spacing:1px}
+.plate::before{content:"E";position:absolute;left:0;top:0;bottom:0;width:15px;background:#1d4ed8;color:#fff;font-size:9px;display:grid;place-items:center}
+.ph0{background:radial-gradient(circle at 70% 20%,#5b3fd6,#0f1a3a 70%);font-size:110px}
+.odo{margin-top:10px;font-size:26px}
+.odo i{color:#bae6fd;text-shadow:0 0 8px rgba(56,189,248,.9);background:linear-gradient(#02040a,#1b2440 50%,#02040a);border-color:#334170}
+.qa{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:12px 0}
+.qa button{display:flex;flex-direction:column;align-items:center;gap:4px;padding:12px 2px;border-radius:16px;font-size:13px;background:linear-gradient(160deg,#1b2650,#131b33);border-color:#2f3d75}
+.qa button span{font-size:26px}
+.dash{gap:10px}
+.gauge{background:linear-gradient(160deg,#1c2a5a,#0d1430);border-color:#34478a;box-shadow:0 0 24px rgba(56,189,248,.18) inset}
+.gauge svg{filter:drop-shadow(0 0 6px rgba(139,92,246,.7))}
+.stat{background:linear-gradient(160deg,#18224a,#111a35);border:1px solid var(--line);border-left:4px solid #8b5cf6}
+.row,.rem,.empty,.chip,select,input,textarea{border-color:var(--line)}
+.row{background:linear-gradient(160deg,#16204a,#121a36)}
+.rem{background:linear-gradient(160deg,#16204a,#121a36);border-left-color:#38bdf8}
+.rem.late{border-left-color:var(--warn)}.rem.soon{border-left-color:#fbbf24}
+.chip.on{background:linear-gradient(135deg,#38bdf8,#8b5cf6);color:#fff;border-color:transparent}
+button.p,.fab{background:linear-gradient(135deg,#38bdf8,#8b5cf6);color:#fff;border:0;box-shadow:0 6px 18px rgba(139,92,246,.45)}
+.fab{bottom:calc(88px + env(safe-area-inset-bottom,0px));font-size:16px;padding:14px 20px}
+nav{left:12px;right:12px;bottom:calc(10px + env(safe-area-inset-bottom,0px));border-radius:24px;border:1px solid #2f3d75;background:rgba(19,27,51,.88);backdrop-filter:blur(14px);padding:6px;gap:4px;box-shadow:0 10px 30px rgba(0,0,0,.5)}
+nav button{border-radius:18px;padding:7px 2px 8px}
+nav button.on{background:linear-gradient(135deg,rgba(56,189,248,.28),rgba(139,92,246,.3));color:#fff}
+.welcome{text-align:center;padding:40px 16px;margin-top:20px;border-radius:24px;border:1px dashed #3a4a8a;background:rgba(19,27,51,.6)}
+.welcome .big{font-size:64px}.welcome h2{justify-content:center}.welcome h2::before{display:none}
+.welcome p{color:var(--mute);margin:0 0 18px}
+dialog{border:1px solid #2f3d75;background:linear-gradient(160deg,#16204a,#0f1630)}
+
+.fl{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.fl .f{display:inline-flex;align-items:center;border:1px solid #2f3d75;border-radius:99px;background:var(--soft);overflow:hidden}
+.fl .f button{border:0;background:none;border-radius:0;padding:6px 9px;font-size:13px}
+.doc{display:flex;gap:12px;align-items:center;width:100%;text-align:left;margin-bottom:8px;border-radius:14px;background:linear-gradient(160deg,#16204a,#121a36)}
+.doc b{display:block;word-break:break-all}.doc em{display:block;font-style:normal;color:var(--mute);font-size:13px;font-weight:400}
+
+.bars{display:flex;gap:8px;height:150px;padding:6px 2px 0}
+.bar{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;font-size:12px;color:var(--mute)}
+.bar b{font-weight:600;color:var(--ink);font-size:11px;min-height:14px}
+.col{flex:1;display:flex;align-items:flex-end;width:100%}
+.col i{display:block;width:100%;min-height:4px;border-radius:8px 8px 3px 3px;background:linear-gradient(#38bdf8,#8b5cf6)}
+.chartbox{background:linear-gradient(160deg,#16204a,#121a36);border:1px solid var(--line);border-radius:16px;padding:12px}
+.cats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.cats button{display:flex;flex-direction:column;align-items:center;gap:4px;padding:12px 4px;border-radius:16px;font-size:13px;text-align:center;background:linear-gradient(160deg,#1b2650,#131b33);border-color:#2f3d75}
+.cats span{font-size:26px}
+.sb{display:flex;gap:8px}.sb input{flex:1}
+.qa{grid-template-columns:repeat(5,1fr)!important}.qa button{font-size:11.5px!important;padding:10px 0!important}.qa button span{font-size:22px!important}
+nav button{font-size:11px}
+.logo{font:800 22px system-ui,sans-serif;font-style:normal}
+.fab{width:56px;height:56px;padding:0!important;border-radius:50%;font-size:32px!important;line-height:1;display:grid;place-items:center}
+</style>
+</head>
+<body>
+<main>
+<header><h1><span class="logo">G</span><span id="ttl"></span></h1><div><button class="g" data-a="sg" aria-label="Search">🔍</button><button class="g" data-a="cfg" aria-label="Settings">⚙️</button></div></header>
+<div id="strip" class="strip"></div>
+<div id="app"></div>
+</main>
+<button class="p fab" data-a="add" id="add"></button>
+<nav id="nav"></nav>
+<input type="file" id="fa" multiple accept="application/pdf,image/*" hidden>
+<input type="file" id="fi" accept="application/json,.json" hidden>
+<dialog id="dg"></dialog><dialog id="dv"></dialog><dialog id="ds"></dialog><dialog id="dc"></dialog>
+<script>
+const $=s=>document.querySelector(s);
+const LANGS={es:"Español",en:"English",pt:"Português",fr:"Français",de:"Deutsch"},LI={en:0,pt:1,fr:2,de:3};
+const nl=(navigator.language||"en").toLowerCase(),dl=nl.slice(0,2);
+const defCfg=()=>({lang:LANGS[dl]?dl:"en",units:nl==="en-us"?"us":nl==="en-gb"?"uk":"metric",cur:nl.endsWith("-us")?"USD":nl.endsWith("-gb")?"GBP":nl.endsWith("-mx")?"MXN":nl.endsWith("-br")?"BRL":nl.endsWith("-ch")?"CHF":"EUR"});
+let S={vehicles:[],entries:[],cur:null},tab="res",filter="all",from="",to="",editing=null,eid=null,photo="",attId=null;
+try{const r=localStorage.getItem("garaje.v1");if(r)S=JSON.parse(r)}catch(e){}
+S.cfg=Object.assign(defCfg(),S.cfg||{});
+// Traducciones: la clave es el texto en español; el array va en orden [en, pt, fr, de]
+const T={
+"Mi garaje":["My garage","Minha garagem","Mon garage","Meine Garage"],
+"Inicio":["Home","Início","Accueil","Start"],"Consumo":["Fuel use","Consumo","Consommation","Verbrauch"],
+"Averías":["Faults","Avarias","Pannes","Defekte"],"Repuestos":["Parts","Peças","Pièces","Teile"],"Historial":["History","Histórico","Historique","Verlauf"],
+"Repostaje":["Refuel","Abastecimento","Plein","Tanken"],"Revisión":["Service","Revisão","Entretien","Wartung"],"Ruedas":["Tyres","Pneus","Pneus","Reifen"],
+"Avería":["Fault","Avaria","Panne","Defekt"],"Seguro":["Insurance","Seguro","Assurance","Versicherung"],"ITV":["Inspection","Inspeção","Contrôle tech.","TÜV"],"Otro":["Other","Outro","Autre","Sonstiges"],
+"Registro":["Record","Registo","Entrée","Eintrag"],"Buscar":["Search","Pesquisar","Rechercher","Suchen"],"Nuevo":["New","Novo","Nouveau","Neu"],
+"Bienvenido a tu garaje":["Welcome to your garage","Bem-vindo à sua garagem","Bienvenue dans votre garage","Willkommen in deiner Garage"],
+"Añade tu coche o tu moto y controla gastos, consumo, averías y vencimientos en un solo sitio.":["Add your car or motorbike and track costs, fuel use, faults and deadlines in one place.","Adicione o seu carro ou moto e controle gastos, consumo, avarias e prazos num só lugar.","Ajoutez votre voiture ou moto et suivez dépenses, consommation, pannes et échéances au même endroit.","Füge dein Auto oder Motorrad hinzu und behalte Kosten, Verbrauch, Defekte und Fristen an einem Ort im Blick."],
+"Añadir mi primer vehículo":["Add my first vehicle","Adicionar o meu primeiro veículo","Ajouter mon premier véhicule","Mein erstes Fahrzeug hinzufügen"],
+"Moto":["Motorbike","Moto","Moto","Motorrad"],"Coche":["Car","Carro","Voiture","Auto"],
+"Actualizar kilometraje":["Update mileage","Atualizar quilometragem","Mettre à jour le km","Kilometerstand aktualisieren"],
+"Editar / foto":["Edit / photo","Editar / foto","Modifier / photo","Bearbeiten / Foto"],
+"media":["average","média","moyenne","Durchschnitt"],
+"gastado en {0}":["spent in {0}","gasto em {0}","dépensé en {0}","Ausgaben {0}"],"gasto total":["total spent","gasto total","dépenses totales","Gesamtkosten"],
+"{0} avería pendiente":["{0} open fault","{0} avaria pendente","{0} panne en cours","{0} offener Defekt"],"{0} averías pendientes":["{0} open faults","{0} avarias pendentes","{0} pannes en cours","{0} offene Defekte"],
+"Ver":["View","Ver","Voir","Ansehen"],"Próximos avisos":["Upcoming reminders","Próximos avisos","Prochains rappels","Anstehende Erinnerungen"],
+"Al guardar una ITV, seguro o revisión, indica la próxima fecha o el próximo kilometraje y el aviso aparecerá aquí.":["When you save an inspection, insurance or service, add the next date or mileage and the reminder will appear here.","Ao guardar uma inspeção, seguro ou revisão, indique a próxima data ou quilometragem e o aviso aparecerá aqui.","En enregistrant un contrôle, une assurance ou un entretien, indiquez la prochaine date ou le prochain kilométrage : le rappel apparaîtra ici.","Wenn du TÜV, Versicherung oder Wartung speicherst, gib das nächste Datum oder den nächsten Kilometerstand an – die Erinnerung erscheint hier."],
+"Vence el {0}":["Due {0}","Vence em {0}","Échéance le {0}","Fällig am {0}"],"a los {0} {1}":["at {0} {1}","aos {0} {1}","à {0} {1}","bei {0} {1}"],
+"hace {0} días":["{0} days ago","há {0} dias","il y a {0} jours","vor {0} Tagen"],"hoy":["today","hoje","aujourd’hui","heute"],"en {0} días":["in {0} days","em {0} dias","dans {0} jours","in {0} Tagen"],
+"{0} {1} de más":["{0} {1} over","{0} {1} a mais","{0} {1} de trop","{0} {1} drüber"],"faltan {0} {1}":["{0} {1} left","faltam {0} {1}","encore {0} {1}","noch {0} {1}"],
+"Documentos":["Documents","Documentos","Documents","Dokumente"],
+"Adjunta el recibo o las condiciones del seguro, la ficha de la ITV, facturas del taller… y los tendrás todos aquí.":["Attach your insurance receipt or terms, inspection report, garage invoices… and keep them all here.","Anexe o recibo ou condições do seguro, relatório da inspeção, faturas da oficina… e tenha tudo aqui.","Joignez le reçu ou les conditions de l’assurance, le rapport de contrôle, les factures du garage… et retrouvez tout ici.","Hänge Versicherungsbeleg oder -bedingungen, Prüfbericht, Werkstattrechnungen an … und finde alles hier."],
+"Gasto de los últimos 6 meses":["Spending, last 6 months","Gasto dos últimos 6 meses","Dépenses des 6 derniers mois","Ausgaben der letzten 6 Monate"],
+"Eliminar este vehículo":["Delete this vehicle","Eliminar este veículo","Supprimer ce véhicule","Dieses Fahrzeug löschen"],
+"¿Eliminar el vehículo y todos sus registros?":["Delete the vehicle and all its records?","Eliminar o veículo e todos os seus registos?","Supprimer le véhicule et tous ses enregistrements ?","Fahrzeug und alle Einträge löschen?"],
+"¿Eliminar este registro?":["Delete this record?","Eliminar este registo?","Supprimer cet enregistrement ?","Diesen Eintrag löschen?"],
+"¿Quitar este documento?":["Remove this document?","Remover este documento?","Retirer ce document ?","Dieses Dokument entfernen?"],
+"Desde":["From","De","Du","Von"],"Hasta":["To","Até","Au","Bis"],"(total del período)":["(period total)","(total do período)","(total de la période)","(Gesamtzeitraum)"],
+"cada 100 {0}":["per 100 {0}","por 100 {0}","pour 100 {0}","pro 100 {0}"],"Por repostaje":["Per refuel","Por abastecimento","Par plein","Pro Tankfüllung"],"Fecha":["Date","Data","Date","Datum"],
+"Se calcula entre repostajes consecutivos llenando el depósito. Hacen falta al menos dos repostajes con kilometraje y volumen.":["Calculated between consecutive full-tank refuels. At least two refuels with mileage and volume are needed.","Calculado entre abastecimentos consecutivos com depósito cheio. São precisos pelo menos dois com quilometragem e volume.","Calculé entre pleins consécutifs (réservoir plein). Il faut au moins deux pleins avec kilométrage et volume.","Berechnet zwischen aufeinanderfolgenden Volltankungen. Mindestens zwei Tankungen mit Kilometerstand und Menge nötig."],
+"Registro de averías":["Fault log","Registo de avarias","Journal des pannes","Defektprotokoll"],
+"{0} registradas · {1} en reparaciones":["{0} logged · {1} in repairs","{0} registadas · {1} em reparações","{0} enregistrées · {1} de réparations","{0} erfasst · {1} Reparaturkosten"],
+"+ Registrar avería":["+ Log a fault","+ Registar avaria","+ Enregistrer une panne","+ Defekt erfassen"],
+"🔍 Buscar un problema o un repuesto":["🔍 Search a problem or part","🔍 Procurar problema ou peça","🔍 Chercher un problème ou une pièce","🔍 Problem oder Teil suchen"],
+"Sin averías registradas.":["No faults logged.","Sem avarias registadas.","Aucune panne enregistrée.","Keine Defekte erfasst."],
+"Todo":["All","Tudo","Tout","Alle"],"No hay registros todavía.":["No records yet.","Ainda sem registos.","Aucun enregistrement.","Noch keine Einträge."],
+"Ej.: pastillas de freno":["E.g. brake pads","Ex.: pastilhas de travão","Ex. : plaquettes de frein","z. B. Bremsbeläge"],"Categorías":["Categories","Categorias","Catégories","Kategorien"],
+"Frenos":["Brakes","Travões","Freins","Bremsen"],"Aceite y filtros":["Oil and filters","Óleo e filtros","Huile et filtres","Öl und Filter"],"Neumáticos":["Tyres","Pneus","Pneus","Reifen"],"Batería":["Battery","Bateria","Batterie","Batterie"],
+"Correa de distribución":["Timing belt","Correia de distribuição","Courroie de distribution","Zahnriemen"],"Bombillas y luces":["Bulbs and lights","Lâmpadas e luzes","Ampoules et feux","Lampen und Leuchten"],"Escobillas":["Wiper blades","Escovas limpa-vidros","Balais d’essuie-glace","Wischerblätter"],
+"Amortiguadores":["Shock absorbers","Amortecedores","Amortisseurs","Stoßdämpfer"],"Embrague":["Clutch","Embraiagem","Embrayage","Kupplung"],"Refrigeración":["Cooling","Arrefecimento","Refroidissement","Kühlung"],"Escape":["Exhaust","Escape","Échappement","Auspuff"],"Kit de arrastre":["Chain kit","Kit de transmissão","Kit chaîne","Kettensatz"],
+"Se abre en otra pestaña con tu vehículo ya incluido en la búsqueda.":["Opens in a new tab with your vehicle already included.","Abre noutro separador com o seu veículo já incluído.","S’ouvre dans un nouvel onglet avec votre véhicule déjà inclus.","Öffnet sich in einem neuen Tab, dein Fahrzeug ist bereits enthalten."],
+"pendiente":["open","pendente","en cours","offen"],"resuelta":["fixed","resolvida","réparée","behoben"],
+"🔍 Buscar causa / repuesto":["🔍 Find cause / part","🔍 Procurar causa / peça","🔍 Chercher cause / pièce","🔍 Ursache / Teil suchen"],
+"Marcar resuelta":["Mark fixed","Marcar resolvida","Marquer réparée","Als behoben markieren"],"Eliminar":["Delete","Eliminar","Supprimer","Löschen"],"Adjuntar":["Attach","Anexar","Joindre","Anhängen"],"Editar":["Edit","Editar","Modifier","Bearbeiten"],
+"Nuevo registro":["New record","Novo registo","Nouvel enregistrement","Neuer Eintrag"],"Editar registro":["Edit record","Editar registo","Modifier l’enregistrement","Eintrag bearbeiten"],
+"Tipo":["Type","Tipo","Type","Typ"],"Título":["Title","Título","Titre","Titel"],
+"Ej.: Cambio de aceite, ruido al frenar…":["E.g. Oil change, noise when braking…","Ex.: troca de óleo, ruído ao travar…","Ex. : vidange, bruit au freinage…","z. B. Ölwechsel, Geräusch beim Bremsen…"],
+"Kilometraje":["Mileage","Quilometragem","Kilométrage","Kilometerstand"],"Importe":["Amount","Valor","Montant","Betrag"],"Volumen":["Volume","Volume","Volume","Menge"],
+"Estado":["Status","Estado","État","Status"],"Pendiente":["Open","Pendente","En cours","Offen"],"Resuelta":["Fixed","Resolvida","Réparée","Behoben"],
+"Próxima fecha":["Next date","Próxima data","Prochaine date","Nächstes Datum"],"Próximo kilometraje":["Next mileage","Próxima quilometragem","Prochain kilométrage","Nächster Kilometerstand"],
+"Documentos (PDF o foto)":["Documents (PDF or photo)","Documentos (PDF ou foto)","Documents (PDF ou photo)","Dokumente (PDF oder Foto)"],
+"Recibo, condiciones generales, factura, ficha de la ITV…":["Receipt, policy terms, invoice, inspection report…","Recibo, condições, fatura, relatório de inspeção…","Reçu, conditions, facture, rapport de contrôle…","Beleg, Bedingungen, Rechnung, Prüfbericht…"],
+"Notas":["Notes","Notas","Notes","Notizen"],"Taller, marca, síntomas…":["Garage, brand, symptoms…","Oficina, marca, sintomas…","Garage, marque, symptômes…","Werkstatt, Marke, Symptome…"],
+"Cancelar":["Cancel","Cancelar","Annuler","Abbrechen"],"Guardar":["Save","Guardar","Enregistrer","Speichern"],"Cerrar":["Close","Fechar","Fermer","Schließen"],
+"Nuevo vehículo":["New vehicle","Novo veículo","Nouveau véhicule","Neues Fahrzeug"],"Editar vehículo":["Edit vehicle","Editar veículo","Modifier le véhicule","Fahrzeug bearbeiten"],
+"Foto":["Photo","Foto","Photo","Foto"],"Nombre":["Name","Nome","Nom","Name"],"Marca, modelo y motor":["Make, model and engine","Marca, modelo e motor","Marque, modèle et moteur","Marke, Modell und Motor"],
+"Año":["Year","Ano","Année","Baujahr"],"Matrícula":["Plate","Matrícula","Plaque","Kennzeichen"],"Kilometraje inicial":["Starting mileage","Quilometragem inicial","Kilométrage initial","Anfangskilometerstand"],"Guardar vehículo":["Save vehicle","Guardar veículo","Enregistrer le véhicule","Fahrzeug speichern"],
+"Buscar avería o repuesto":["Search fault or part","Procurar avaria ou peça","Chercher une panne ou une pièce","Defekt oder Teil suchen"],
+"¿Qué pasa o qué necesitas?":["What’s wrong or what do you need?","O que se passa ou o que precisa?","Quel est le problème ou que vous faut-il ?","Was ist los oder was brauchst du?"],
+"Ej.: ruido al frenar, pastillas de freno, testigo motor…":["E.g. noise when braking, brake pads, engine light…","Ex.: ruído ao travar, pastilhas, luz do motor…","Ex. : bruit au freinage, plaquettes, voyant moteur…","z. B. Geräusch beim Bremsen, Bremsbeläge, Motorleuchte…"],
+"Diagnóstico con buscador o IA":["Diagnosis with search or AI","Diagnóstico com pesquisa ou IA","Diagnostic avec moteur de recherche ou IA","Diagnose mit Suche oder KI"],"Comprar repuesto":["Buy parts","Comprar peças","Acheter des pièces","Teile kaufen"],
+"Preguntar a Claude":["Ask Claude","Perguntar ao Claude","Demander à Claude","Claude fragen"],"Preguntar a ChatGPT":["Ask ChatGPT","Perguntar ao ChatGPT","Demander à ChatGPT","ChatGPT fragen"],"IA de Google":["Google AI","IA do Google","IA de Google","Google KI"],
+"Mi {0}{1} tiene este problema o necesidad: {2}. ¿Cuáles son las causas probables, cómo lo compruebo yo mismo y qué repuesto o reparación haría falta, con precio orientativo?":["My {0}{1} has this problem or need: {2}. What are the likely causes, how can I check it myself, and which part or repair would be needed, with an approximate price?","O meu {0}{1} tem este problema ou necessidade: {2}. Quais são as causas prováveis, como posso verificar eu mesmo e que peça ou reparação seria necessária, com preço aproximado?","Mon {0}{1} a ce problème ou ce besoin : {2}. Quelles sont les causes probables, comment le vérifier moi-même et quelle pièce ou réparation faut-il, avec un prix approximatif ?","Mein {0}{1} hat dieses Problem oder diesen Bedarf: {2}. Was sind die wahrscheinlichen Ursachen, wie kann ich es selbst prüfen und welches Teil oder welche Reparatur wäre nötig, mit ungefährem Preis?"],
+"Ajustes":["Settings","Definições","Réglages","Einstellungen"],"Idioma":["Language","Idioma","Langue","Sprache"],"Unidades":["Units","Unidades","Unités","Einheiten"],
+"Métrico (km, L)":["Metric (km, L)","Métrico (km, L)","Métrique (km, L)","Metrisch (km, L)"],"EE. UU. (mi, gal)":["US (mi, gal)","EUA (mi, gal)","États-Unis (mi, gal)","USA (mi, gal)"],"Reino Unido (mi, L)":["UK (mi, L)","Reino Unido (mi, L)","Royaume-Uni (mi, L)","Vereinigtes Königreich (mi, L)"],
+"Moneda":["Currency","Moeda","Devise","Währung"],"Copia de seguridad":["Backup","Cópia de segurança","Sauvegarde","Sicherung"],
+"Guarda todo (datos, fotos y documentos) en un archivo y restáurala cuando quieras.":["Saves everything (data, photos and documents) in one file you can restore anytime.","Guarda tudo (dados, fotos e documentos) num ficheiro e restaure quando quiser.","Enregistre tout (données, photos et documents) dans un fichier à restaurer quand vous voulez.","Speichert alles (Daten, Fotos und Dokumente) in einer Datei, die du jederzeit wiederherstellen kannst."],
+"Exportar copia":["Export backup","Exportar cópia","Exporter la sauvegarde","Sicherung exportieren"],"Importar copia":["Import backup","Importar cópia","Importer la sauvegarde","Sicherung importieren"],
+"Se sustituirán los datos actuales. ¿Continuar?":["Current data will be replaced. Continue?","Os dados atuais serão substituídos. Continuar?","Les données actuelles seront remplacées. Continuer ?","Die aktuellen Daten werden ersetzt. Fortfahren?"],
+"Algunos enlaces de tiendas son de afiliación: si compras, la app puede recibir una comisión sin coste extra para ti.":["Some store links are affiliate links: if you buy, the app may earn a commission at no extra cost to you.","Alguns links de lojas são de afiliação: se comprar, a app pode receber uma comissão sem custo extra para si.","Certains liens vers des boutiques sont des liens d’affiliation : si vous achetez, l’appli peut recevoir une commission sans frais supplémentaires pour vous.","Einige Shop-Links sind Affiliate-Links: Wenn du kaufst, erhält die App möglicherweise eine Provision – ohne Mehrkosten für dich."],
+"Copia restaurada.":["Backup restored.","Cópia restaurada.","Sauvegarde restaurée.","Sicherung wiederhergestellt."],"El archivo no es una copia válida.":["This file is not a valid backup.","O ficheiro não é uma cópia válida.","Ce fichier n’est pas une sauvegarde valide.","Die Datei ist keine gültige Sicherung."],
+"“{0}” pesa más de 25 MB y no se ha guardado.":["“{0}” is over 25 MB and was not saved.","“{0}” tem mais de 25 MB e não foi guardado.","« {0} » dépasse 25 Mo et n’a pas été enregistré.","„{0}“ ist größer als 25 MB und wurde nicht gespeichert."],
+"No se pudo guardar “{0}”.":["Could not save “{0}”.","Não foi possível guardar “{0}”.","Impossible d’enregistrer « {0} ».","„{0}“ konnte nicht gespeichert werden."],
+"No se pudo abrir el archivo.":["Could not open the file.","Não foi possível abrir o ficheiro.","Impossible d’ouvrir le fichier.","Datei konnte nicht geöffnet werden."],
+"No se encuentra el archivo en este dispositivo.":["File not found on this device.","Ficheiro não encontrado neste dispositivo.","Fichier introuvable sur cet appareil.","Datei auf diesem Gerät nicht gefunden."]
+};
+const t=(k,...a)=>{const r=T[k],i=LI[S.cfg.lang];return((r&&i!==undefined&&r[i])||k).replace(/\{(\d)\}/g,(_,n)=>a[n])};
+const TYPES={gas:"Repostaje",rev:"Revisión",tyre:"Ruedas",fail:"Avería",ins:"Seguro",itv:"ITV",other:"Otro"};
+const ICO={gas:"⛽",rev:"🔧",tyre:"🛞",fail:"⚠️",ins:"🛡️",itv:"📋",other:"📝"};
+const ty=k=>t(TYPES[k]);
+const TABS=[["res","Inicio","🏁"],["con","Consumo","⛽"],["ave","Averías","🔧"],["rep","Repuestos","🛒"],["his","Historial","🗂️"]];
+const CATS=[["🛑","Frenos"],["🛢️","Aceite y filtros"],["🛞","Neumáticos"],["🔋","Batería"],["⛓️","Correa de distribución"],["💡","Bombillas y luces"],["🌧️","Escobillas"],["🔩","Amortiguadores"],["⚙️","Embrague"],["❄️","Refrigeración"],["💨","Escape"],["🏍️","Kit de arrastre"]];
+const SH={es:{az:"amazon.es",eb:"ebay.es",ad:"autodoc.es",wp:"es.wallapop.com"},en:{az:"amazon.com",eb:"ebay.com",ad:"autodoc.co.uk"},pt:{az:"amazon.com.br",eb:"ebay.com",ad:"autodoc.pt"},fr:{az:"amazon.fr",eb:"ebay.fr",ad:"autodoc.fr"},de:{az:"amazon.de",eb:"ebay.de",ad:"autodoc.de"}};
+// ===== AFILIACIÓN: rellena estos datos cuando te aprueben en cada programa. Vacío = enlaces normales =====
+const AFF={
+  amazonTags:{},   // un tag por tienda, p. ej. {"amazon.es":"tuid-21","amazon.com":"tuid-20"}
+  ebayQuery:{},    // parámetros de eBay Partner Network, p. ej. {"ebay.es":"mkcid=1&mkrid=...&campid=...&toolid=10001&mkevt=1"}
+  awin:{affid:"",mids:{"autodoc.es":"120163"}}  // affid = tu ID de editor en Awin; verifica el mid de Autodoc en tu panel
+};
+const hasAff=()=>Object.keys(AFF.amazonTags).length>0||Object.keys(AFF.ebayQuery).length>0||!!AFF.awin.affid;
+function aff(host,u){try{
+  if(host.startsWith("amazon.")&&AFF.amazonTags[host])return u+"&tag="+encodeURIComponent(AFF.amazonTags[host]);
+  if(host.startsWith("ebay.")&&AFF.ebayQuery[host])return u+"&"+AFF.ebayQuery[host];
+  if(host.startsWith("autodoc.")&&AFF.awin.affid&&AFF.awin.mids[host])return "https://www.awin1.com/cread.php?awinmid="+AFF.awin.mids[host]+"&awinaffid="+encodeURIComponent(AFF.awin.affid)+"&ued="+encodeURIComponent(u);
+}catch(e){}return u}
+// utilidades y unidades (los datos se guardan siempre en km y litros)
+const save=()=>{try{localStorage.setItem("garaje.v1",JSON.stringify(S));return true}catch(e){alert("Storage full / Sin espacio");return false}};
+const uid=()=>Math.random().toString(36).slice(2,10);
+const esc=s=>String(s||"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const num=(n,d=0)=>n.toLocaleString(S.cfg.lang,{maximumFractionDigits:d,minimumFractionDigits:d});
+const money=n=>n.toLocaleString(S.cfg.lang,{style:"currency",currency:S.cfg.cur});
+const fd=s=>s?new Date(s+"T00:00:00").toLocaleDateString(S.cfg.lang,{day:"numeric",month:"short",year:"numeric"}):"";
+const today=()=>new Date().toLocaleDateString("sv");
+const veh=()=>S.vehicles.find(v=>v.id===S.cur);
+const mi=()=>S.cfg.units!=="metric",dU=()=>mi()?"mi":"km",vU=()=>S.cfg.units==="us"?"gal":"L";
+const toD=k=>mi()?k/1.609344:k,fromD=x=>+(mi()?x*1.609344:x).toFixed(1);
+const toV=l=>S.cfg.units==="us"?l/3.785411784:l,fromV=x=>+(S.cfg.units==="us"?x*3.785411784:x).toFixed(3);
+const ecoU=()=>S.cfg.units==="metric"?"L/100 km":S.cfg.units==="us"?"mpg (US)":"mpg (UK)";
+const ecoV=l100=>l100==null?null:S.cfg.units==="metric"?l100:(S.cfg.units==="us"?235.215:282.481)/l100;
+// almacén de documentos (IndexedDB)
+let _db;const idb=()=>_db||(_db=new Promise((res,rej)=>{const r=indexedDB.open("garaje-files",1);r.onupgradeneeded=()=>r.result.createObjectStore("f");r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)}));
+const putFile=async(id,b)=>{const d=await idb();return new Promise((res,rej)=>{const x=d.transaction("f","readwrite");x.objectStore("f").put(b,id);x.oncomplete=res;x.onerror=()=>rej(x.error)})};
+const getFile=async id=>{const d=await idb();return new Promise((res,rej)=>{const r=d.transaction("f").objectStore("f").get(id);r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)})};
+const delFile=async id=>{try{const d=await idb();d.transaction("f","readwrite").objectStore("f").delete(id)}catch(e){}};
+async function storeFiles(list){const out=[];for(const f of list){
+  if(f.size>25*1048576){alert(t("“{0}” pesa más de 25 MB y no se ha guardado.",f.name));continue}
+  try{const id=uid();await putFile(id,f);out.push({id,name:f.name,type:f.type})}catch(e){alert(t("No se pudo guardar “{0}”.",f.name))}}return out}
+async function openFile(id){try{const b=await getFile(id);if(!b){alert(t("No se encuentra el archivo en este dispositivo."));return}
+  const u=URL.createObjectURL(b),a=document.createElement("a");a.href=u;a.target="_blank";a.rel="noopener";a.click();setTimeout(()=>URL.revokeObjectURL(u),60000)}catch(e){alert(t("No se pudo abrir el archivo."))}}
+const fico=f=>f.type==="application/pdf"?"📄":"🖼️";
+const filesHtml=e=>(e.files&&e.files.length)?`<div class="fl">${e.files.map(f=>`<span class="f"><button data-a="file" data-id="${f.id}">${fico(f)} ${esc(f.name.length>26?f.name.slice(0,23)+"…":f.name)}</button><button data-a="rf" data-id="${e.id}" data-fid="${f.id}" aria-label="x">✕</button></span>`).join("")}</div>`:"";
+const docsHtml=es=>{const d=es.flatMap(e=>(e.files||[]).map(f=>({e,f})));
+  return `<h2>${t("Documentos")}</h2>`+(d.length?d.map(({e,f})=>`<button class="doc" data-a="file" data-id="${f.id}"><span style="font-size:26px">${fico(f)}</span><span><b>${esc(f.name)}</b><em>${ICO[e.type]} ${ty(e.type)} · ${fd(e.date)}</em></span></button>`).join(""):`<div class="empty">${t("Adjunta el recibo o las condiciones del seguro, la ficha de la ITV, facturas del taller… y los tendrás todos aquí.")}</div>`)};
+// consumo
+function consumo(es){
+  const g=es.filter(e=>e.type==="gas"&&e.km&&e.liters).sort((a,b)=>a.km-b.km),segs=[];
+  for(let i=1;i<g.length;i++){const d=g[i].km-g[i-1].km;if(d>0&&(!from||g[i].date>=from)&&(!to||g[i].date<=to))segs.push({date:g[i].date,d,l:g[i].liters,c:g[i].cost||0})}
+  const K=segs.reduce((s,x)=>s+x.d,0),L=segs.reduce((s,x)=>s+x.l,0),C=segs.reduce((s,x)=>s+x.c,0);
+  return{segs,K,L,C,l100:K?L/K*100:null,per100:K?C/toD(K)*100:null};
+}
+const odo=n=>String(Math.max(0,n)).padStart(6,"0").split("").map(d=>`<i>${d}</i>`).join("");
+function gauge(l100){const max=l100&&l100>12?20:12,f=l100?Math.min(1,l100/max):0,L=188.5,v=ecoV(l100);
+  return `<div class="gauge"><svg viewBox="0 0 140 84" role="img"><defs><linearGradient id="gg" x1="0" x2="1"><stop offset="0" stop-color="#38bdf8"/><stop offset=".6" stop-color="#a78bfa"/><stop offset="1" stop-color="#f472b6"/></linearGradient></defs><path d="M10 74 A60 60 0 0 1 130 74" fill="none" stroke="rgba(255,255,255,.12)" stroke-width="12" stroke-linecap="round"/>${f?`<path d="M10 74 A60 60 0 0 1 130 74" fill="none" stroke="url(#gg)" stroke-width="12" stroke-linecap="round" stroke-dasharray="${L*f} ${L}"/>`:""}</svg><div class="gv"><span class="num">${v?num(v,1):"–"}</span><small>${ecoU()} · ${t("media")}</small></div></div>`}
+function chart(es){const n=new Date(),out=[];
+  for(let i=5;i>=0;i--){const ix=n.getMonth()-i,yy=n.getFullYear()+Math.floor(ix/12),mm=((ix%12)+12)%12,key=`${yy}-${String(mm+1).padStart(2,"0")}`;
+    out.push({l:new Date(yy,mm,1).toLocaleDateString(S.cfg.lang,{month:"short"}),v:es.filter(e=>e.date.startsWith(key)).reduce((s,e)=>s+(e.cost||0),0)})}
+  const mx=Math.max(...out.map(o=>o.v));if(!mx)return"";
+  return `<h2>${t("Gasto de los últimos 6 meses")}</h2><div class="chartbox"><div class="bars">${out.map(o=>`<div class="bar"><b>${o.v?Math.round(o.v):""}</b><div class="col"><i style="height:${o.v?Math.max(4,o.v/mx*100):2}%"></i></div><span>${o.l}</span></div>`).join("")}</div></div>`}
+function rowHtml(e,withSearch){const f=e.type==="fail";
+  return `<div class="row t-${e.type}"><div class="ic">${ICO[e.type]}</div><div class="rb"><div class="top"><span><span class="tag ${f&&e.status==="open"?"open":""}">${ty(e.type)}${f?" · "+t(e.status==="open"?"pendiente":"resuelta"):""}</span>${fd(e.date)}</span><span>${e.cost?money(e.cost):""}</span></div>
+  ${e.title?`<div><b>${esc(e.title)}</b></div>`:""}
+  <div class="meta">${e.km?num(toD(e.km))+" "+dU():""}${e.liters?" · "+num(toV(e.liters),2)+" "+vU()+(e.cost?" · "+num(e.cost/toV(e.liters),3)+" "+S.cfg.cur+"/"+vU():""):""}</div>
+  ${e.notes?`<div class="notes">${esc(e.notes)}</div>`:""}${filesHtml(e)}
+  <div class="ra"><button class="g" data-a="att" data-id="${e.id}">📎 ${t("Adjuntar")}</button><button class="g" data-a="ed" data-id="${e.id}">${t("Editar")}</button>${withSearch?`<button class="g" data-a="s" data-id="${e.id}">${t("🔍 Buscar causa / repuesto")}</button>`:""}${f&&e.status==="open"?`<button class="g" data-a="ok" data-id="${e.id}">${t("Marcar resuelta")}</button>`:""}<button class="g" data-a="del" data-id="${e.id}">${t("Eliminar")}</button></div></div></div>`}
+// diálogos
+function build(){
+  document.documentElement.lang=S.cfg.lang;$("#ttl").textContent=t("Mi garaje");
+  $("#dg").innerHTML=`<form id="fm" style="margin:0"><h2 id="fh" style="margin-top:0"></h2>
+  <label for="t">${t("Tipo")}</label><select id="t">${Object.entries(TYPES).map(([k,v])=>`<option value="${k}">${t(v)}</option>`).join("")}</select>
+  <label for="ti">${t("Título")}</label><input id="ti" placeholder="${t("Ej.: Cambio de aceite, ruido al frenar…")}">
+  <div class="two"><div><label for="d">${t("Fecha")}</label><input type="date" id="d" required></div><div><label for="k">${t("Kilometraje")} (${dU()})</label><input type="number" id="k" inputmode="numeric" min="0"></div></div>
+  <div class="two"><div><label for="c">${t("Importe")} (${S.cfg.cur})</label><input type="number" id="c" inputmode="decimal" step="0.01" min="0"></div>
+  <div id="lw"><label for="l">${t("Volumen")} (${vU()})</label><input type="number" id="l" inputmode="decimal" step="0.01" min="0"></div>
+  <div id="sw"><label for="st">${t("Estado")}</label><select id="st"><option value="open">${t("Pendiente")}</option><option value="done">${t("Resuelta")}</option></select></div></div>
+  <div class="two"><div><label for="nd">${t("Próxima fecha")}</label><input type="date" id="nd"></div><div><label for="nk">${t("Próximo kilometraje")} (${dU()})</label><input type="number" id="nk" inputmode="numeric" min="0"></div></div>
+  <label for="fl">${t("Documentos (PDF o foto)")}</label><input type="file" id="fl" multiple accept="application/pdf,image/*"><div class="meta" style="margin-top:3px">${t("Recibo, condiciones generales, factura, ficha de la ITV…")}</div>
+  <label for="n">${t("Notas")}</label><textarea id="n" rows="2" placeholder="${t("Taller, marca, síntomas…")}"></textarea>
+  <div class="acts"><button type="button" data-a="close" data-id="dg">${t("Cancelar")}</button><button class="p">${t("Guardar")}</button></div></form>`;
+  $("#dv").innerHTML=`<form id="fv" style="margin:0"><h2 id="vh" style="margin-top:0"></h2>
+  <div class="ph"><img id="vimg" alt=""><div><label for="vf" style="margin:0">${t("Foto")}</label><input type="file" id="vf" accept="image/*"></div></div>
+  <label for="vn">${t("Nombre")}</label><input id="vn" required>
+  <label for="vm">${t("Marca, modelo y motor")}</label><input id="vm" placeholder="Seat León 1.6 TDI">
+  <div class="two"><div><label for="vy">${t("Año")}</label><input id="vy" type="number" inputmode="numeric" min="1950" max="2100"></div><div><label for="vt">${t("Tipo")}</label><select id="vt"><option value="coche">${t("Coche")}</option><option value="moto">${t("Moto")}</option></select></div></div>
+  <div class="two"><div><label for="vp">${t("Matrícula")}</label><input id="vp"></div><div><label for="vk">${t("Kilometraje inicial")} (${dU()})</label><input id="vk" type="number" inputmode="numeric" min="0"></div></div>
+  <div class="acts"><button type="button" data-a="close" data-id="dv">${t("Cancelar")}</button><button class="p">${t("Guardar vehículo")}</button></div></form>`;
+  $("#ds").innerHTML=`<div><h2 style="margin-top:0">${t("Buscar avería o repuesto")}</h2><label for="sq">${t("¿Qué pasa o qué necesitas?")}</label><input id="sq" placeholder="${t("Ej.: ruido al frenar, pastillas de freno, testigo motor…")}">
+  <h2 style="font-size:17px">${t("Diagnóstico con buscador o IA")}</h2><div id="sl1"></div><h2 style="font-size:17px">${t("Comprar repuesto")}</h2><div id="sl2"></div>
+  <p class="meta">${t("Se abre en otra pestaña con tu vehículo ya incluido en la búsqueda.")}</p><p class="meta" id="disc"></p><div class="acts"><span></span><button data-a="close" data-id="ds">${t("Cerrar")}</button></div></div>`;
+  $("#dc").innerHTML=`<div><h2 style="margin-top:0">${t("Ajustes")}</h2>
+  <label for="sl">${t("Idioma")}</label><select id="sl" data-set="lang">${Object.entries(LANGS).map(([k,v])=>`<option value="${k}" ${S.cfg.lang===k?"selected":""}>${v}</option>`).join("")}</select>
+  <label for="su">${t("Unidades")}</label><select id="su" data-set="units">${[["metric","Métrico (km, L)"],["us","EE. UU. (mi, gal)"],["uk","Reino Unido (mi, L)"]].map(([k,v])=>`<option value="${k}" ${S.cfg.units===k?"selected":""}>${t(v)}</option>`).join("")}</select>
+  <label for="sc">${t("Moneda")}</label><select id="sc" data-set="cur">${["EUR","USD","GBP","MXN","BRL","CHF"].map(c=>`<option ${S.cfg.cur===c?"selected":""}>${c}</option>`).join("")}</select>
+  <h2>${t("Copia de seguridad")}</h2><p class="meta" style="margin-top:0">${t("Guarda todo (datos, fotos y documentos) en un archivo y restáurala cuando quieras.")}</p>
+  <div class="ra" style="justify-content:flex-start"><button class="p" data-a="exp">${t("Exportar copia")}</button><button data-a="imp">${t("Importar copia")}</button></div>
+  <div class="acts"><span></span><button data-a="close" data-id="dc">${t("Cerrar")}</button></div></div>`;
+}
+const sync=()=>{const x=$("#t").value;$("#lw").style.display=x==="gas"?"":"none";$("#sw").style.display=x==="fail"?"":"none"};
+function newEntry(type,e){eid=e?e.id:null;$("#fm").reset();$("#fh").textContent=t(e?"Editar registro":"Nuevo registro");
+  $("#t").value=e?e.type:type||"gas";$("#d").value=e?e.date:today();
+  if(e){$("#ti").value=e.title||"";$("#k").value=e.km?Math.round(toD(e.km)):"";$("#c").value=e.cost||"";$("#l").value=e.liters?+toV(e.liters).toFixed(2):"";$("#st").value=e.status||"open";$("#nd").value=e.nextDate||"";$("#nk").value=e.nextKm?Math.round(toD(e.nextKm)):"";$("#n").value=e.notes||""}
+  sync();$("#dg").showModal()}
+async function saveEntry(){const f=id=>$(id).value,k=f("#t"),m=await storeFiles([...$("#fl").files]),old=eid&&S.entries.find(x=>x.id===eid);
+  const e={id:eid||uid(),vid:old?old.vid:S.cur,type:k,title:f("#ti").trim(),date:f("#d")||today(),km:fromD(parseFloat(f("#k"))||0),cost:parseFloat(f("#c"))||0,liters:k==="gas"?fromV(parseFloat(f("#l"))||0):0,status:k==="fail"?f("#st"):"",nextDate:f("#nd"),nextKm:fromD(parseFloat(f("#nk"))||0),notes:f("#n").trim(),files:(old&&old.files||[]).concat(m)};
+  if(old)Object.assign(old,e);else S.entries.push(e);save();render()}
+function vehForm(v){editing=v?v.id:null;$("#fv").reset();photo=v?v.photo||"":"";photo?$("#vimg").src=photo:$("#vimg").removeAttribute("src");$("#vimg").style.visibility=photo?"visible":"hidden";
+  $("#vh").textContent=t(v?"Editar vehículo":"Nuevo vehículo");
+  if(v){$("#vn").value=v.name;$("#vm").value=v.model||"";$("#vy").value=v.year||"";$("#vt").value=v.type;$("#vp").value=v.plate||"";$("#vk").value=v.km0?Math.round(toD(v.km0)):""}
+  $("#dv").showModal()}
+async function saveVeh(){const d={name:$("#vn").value.trim(),model:$("#vm").value.trim(),year:parseInt($("#vy").value)||0,type:$("#vt").value,plate:$("#vp").value.trim(),km0:fromD(parseFloat($("#vk").value)||0),photo};
+  if(editing)Object.assign(S.vehicles.find(x=>x.id===editing),d);else{const v={id:uid(),...d};S.vehicles.push(v);S.cur=v.id}save();render()}
+function photoPick(f){if(!f)return;const r=new FileReader();r.onload=()=>{const im=new Image();im.onload=()=>{const s=Math.min(1,700/Math.max(im.width,im.height)),c=document.createElement("canvas");c.width=im.width*s;c.height=im.height*s;c.getContext("2d").drawImage(im,0,0,c.width,c.height);photo=c.toDataURL("image/jpeg",.75);$("#vimg").src=photo;$("#vimg").style.visibility="visible"};im.src=r.result};r.readAsDataURL(f)}
+// búsqueda de averías y repuestos
+function openSearch(q){$("#sq").value=q||"";buildLinks();$("#ds").showModal()}
+function buildLinks(){const q=$("#sq").value.trim(),v=veh(),e=encodeURIComponent,sh=SH[S.cfg.lang]||SH.en;
+  const c=v?[v.model||v.name,v.year||""].filter(Boolean).join(" "):"";
+  const km=v?Math.max(v.km0||0,...S.entries.filter(x=>x.vid===v.id).map(x=>x.km||0)):0;
+  const prompt=t("Mi {0}{1} tiene este problema o necesidad: {2}. ¿Cuáles son las causas probables, cómo lo compruebo yo mismo y qué repuesto o reparación haría falta, con precio orientativo?",c||t(v&&v.type==="moto"?"Moto":"Coche").toLowerCase(),km?` (${num(toD(km))} ${dU()})`:"",q||"…");
+  const full=e(`${c} ${q}`.trim()),a=(u,n,cl="")=>`<a class="btn ${cl}" href="${u}" target="_blank" rel="sponsored noopener">${n}</a>`;
+  $("#sl1").innerHTML=a(`https://www.google.com/search?q=${full}`,"Google")+a(`https://www.youtube.com/results?search_query=${full}`,"YouTube")+a(`https://claude.ai/new?q=${e(prompt)}`,t("Preguntar a Claude"),"ai")+a(`https://chatgpt.com/?q=${e(prompt)}`,t("Preguntar a ChatGPT"),"ai")+a(`https://www.google.com/search?udm=50&q=${e(prompt)}`,t("IA de Google"),"ai");
+  $("#sl2").innerHTML=a(`https://www.google.com/search?tbm=shop&q=${full}`,"Google Shopping")+a(aff(sh.az,`https://www.${sh.az}/s?k=${full}`),"Amazon")+a(aff(sh.eb,`https://www.${sh.eb}/sch/i.html?_nkw=${full}`),"eBay")+a(aff(sh.ad,`https://www.${sh.ad}/search?keyword=${full}`),"Autodoc")+(sh.wp?a(`https://${sh.wp}/app/search?keywords=${full}`,"Wallapop"):"");$("#disc").textContent=hasAff()?t("Algunos enlaces de tiendas son de afiliación: si compras, la app puede recibir una comisión sin coste extra para ti."):""}
+// copia de seguridad en archivo
+async function exportAll(){const files={};
+  for(const e of S.entries)for(const f of e.files||[]){const b=await getFile(f.id);if(b)files[f.id]=await new Promise(r=>{const x=new FileReader();x.onload=()=>r(x.result);x.readAsDataURL(b)})}
+  const name=`mi-garaje-${today()}.json`,blob=new Blob([JSON.stringify({app:"garaje",v:2,data:S,files})],{type:"application/json"}),file=new File([blob],name,{type:"application/json"});
+  try{if(navigator.canShare&&navigator.canShare({files:[file]})){await navigator.share({files:[file]});return}}catch(e){if(e.name==="AbortError")return}
+  const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=name;a.click()}
+async function importAll(file){try{const d=JSON.parse(await file.text()),dd=d.data||d;if(!Array.isArray(dd.vehicles)||!Array.isArray(dd.entries))throw 0;
+  if(!confirm(t("Se sustituirán los datos actuales. ¿Continuar?")))return;
+  for(const [id,u] of Object.entries(d.files||{}))await putFile(id,await(await fetch(u)).blob());
+  const cfg=dd.cfg||S.cfg;S=dd;S.cfg=Object.assign(defCfg(),cfg);save();build();render();alert(t("Copia restaurada."))}catch(e){alert(t("El archivo no es una copia válida."))}}
+// pantalla principal
+function render(){
+  $("#add").textContent="+";$("#add").setAttribute("aria-label",t("Registro"));
+  $("#strip").innerHTML=S.vehicles.map(v=>`<button class="vc ${v.id===S.cur?"on":""}" data-a="veh" data-id="${v.id}"><span class="vi">${v.photo?`<img src="${v.photo}" alt="">`:(v.type==="moto"?"🏍️":"🚗")}</span><b>${esc(v.name)}</b></button>`).join("")+`<button class="vc add" data-a="addv"><span class="vi">＋</span><b>${t("Nuevo")}</b></button>`;
+  $("#nav").innerHTML=TABS.map(([k,n,i])=>`<button class="${tab===k?"on":""}" data-a="tab" data-id="${k}"><span>${i}</span>${t(n)}</button>`).join("");
+  const v=veh(),app=$("#app");$("#add").style.display=v&&(tab==="con"||tab==="his")?"":"none";
+  if(!v){app.innerHTML=`<div class="welcome"><div class="big">🏍️ 🚗</div><h2>${t("Bienvenido a tu garaje")}</h2><p>${t("Añade tu coche o tu moto y controla gastos, consumo, averías y vencimientos en un solo sitio.")}</p><button class="p" data-a="addv">${t("Añadir mi primer vehículo")}</button></div>`;return}
+  const es=S.entries.filter(e=>e.vid===v.id).sort((a,b)=>b.date.localeCompare(a.date)||(b.km||0)-(a.km||0));
+  const maxKm=Math.max(v.km0||0,...es.map(e=>e.km||0));let h="";
+  if(tab==="res"){
+    const total=es.reduce((s,e)=>s+(e.cost||0),0),yr=new Date().getFullYear(),tY=es.filter(e=>e.date.startsWith(yr)).reduce((s,e)=>s+(e.cost||0),0);
+    const co=(()=>{const a=from,b=to;from=to="";const r=consumo(es);from=a;to=b;return r})();
+    const last={};es.slice().reverse().forEach(e=>{if(e.nextDate||e.nextKm)last[e.type]=e});
+    const rems=Object.values(last).map(e=>{let days=null,kl=null;
+      if(e.nextDate)days=Math.round((new Date(e.nextDate+"T00:00:00")-new Date(today()+"T00:00:00"))/864e5);
+      if(e.nextKm)kl=e.nextKm-maxKm;
+      const late=(days!==null&&days<0)||(kl!==null&&kl<0),soon=!late&&((days!==null&&days<=30)||(kl!==null&&kl<=1000)),p=[];
+      if(days!==null)p.push(days<0?t("hace {0} días",-days):days===0?t("hoy"):t("en {0} días",days));
+      if(kl!==null)p.push(kl<0?t("{0} {1} de más",num(toD(-kl)),dU()):t("faltan {0} {1}",num(toD(kl)),dU()));
+      return{e,late,soon,txt:p.join(" · "),s:days!==null?days:9999}}).sort((a,b)=>a.s-b.s);
+    const open=es.filter(e=>e.type==="fail"&&e.status==="open").length;
+    h=`<div class="hero">${v.photo?`<img src="${v.photo}" alt="">`:`<div class="ph0">${v.type==="moto"?"🏍️":"🚗"}</div>`}<div class="in"><div><strong class="vt">${esc(v.name)}</strong><small>${t(v.type==="moto"?"Moto":"Coche")}${v.model?" · "+esc(v.model):""}${v.year?" · "+v.year:""}</small>${v.plate?`<span class="plate">${esc(v.plate)}</span>`:""}<span class="odo">${odo(Math.round(toD(maxKm)))}<b>${dU()}</b></span></div><div style="display:flex;flex-direction:column;gap:6px"><button data-a="upk">${t("Actualizar kilometraje")}</button><button data-a="editv">${t("Editar / foto")}</button></div></div></div>
+    <div class="qa">${[["gas","⛽","Repostaje"],["fail","⚠️","Avería"],["rev","🔧","Revisión"],["itv","📋","ITV"]].map(([k,i,n])=>`<button data-a="q" data-id="${k}"><span>${i}</span>${t(n)}</button>`).join("")}<button data-a="tab" data-id="rep"><span>🛒</span>${t("Repuestos")}</button></div>
+    <div class="dash">${gauge(co.l100)}<div class="side"><div class="stat"><span class="num">${money(tY)}</span><span>${t("gastado en {0}",yr)}</span></div><div class="stat"><span class="num">${money(total)}</span><span>${t("gasto total")}</span></div></div></div>
+    ${open?`<div class="rem late" style="margin-top:10px"><div><b>${t(open>1?"{0} averías pendientes":"{0} avería pendiente",open)}</b></div><button data-a="tab" data-id="ave">${t("Ver")}</button></div>`:""}
+    <h2>${t("Próximos avisos")}</h2>${rems.length?rems.map(r=>`<div class="rem ${r.late?"late":r.soon?"soon":""}"><div><b>${ICO[r.e.type]} ${ty(r.e.type)}</b><em>${r.e.nextDate?t("Vence el {0}",fd(r.e.nextDate)):""}${r.e.nextDate&&r.e.nextKm?" · ":""}${r.e.nextKm?t("a los {0} {1}",num(toD(r.e.nextKm)),dU()):""}</em></div><div class="w">${r.txt}</div></div>`).join(""):`<div class="empty">${t("Al guardar una ITV, seguro o revisión, indica la próxima fecha o el próximo kilometraje y el aviso aparecerá aquí.")}</div>`}
+    ${chart(es)}${docsHtml(es)}
+    <div style="text-align:center;margin-top:18px"><button class="g" data-a="delv">${t("Eliminar este vehículo")}</button></div>`;
+  }
+  if(tab==="con"){const r=consumo(es),ev=ecoV(r.l100);
+    h=`<h2>${t("Consumo")}</h2><div class="two"><div><label for="cf">${t("Desde")}</label><input type="date" id="cf" value="${from}"></div><div><label for="ct">${t("Hasta")}</label><input type="date" id="ct" value="${to}"></div></div>
+    <div class="stats" style="margin-top:12px"><div class="stat"><span class="num">${ev?num(ev,2):"–"}</span><span>${ecoU()} ${t("(total del período)")}</span></div><div class="stat"><span class="num">${r.per100?money(r.per100):"–"}</span><span>${t("cada 100 {0}",dU())}</span></div><div class="stat"><span class="num">${num(toD(r.K))}</span><span>${dU()} · ${num(toV(r.L),1)} ${vU()} · ${money(r.C)}</span></div></div>
+    <h2>${t("Por repostaje")}</h2>${r.segs.length?`<div class="wrap"><table><tr><th>${t("Fecha")}</th><th>${dU()}</th><th>${vU()}</th><th>${ecoU().split(" ")[0]}</th><th>${S.cfg.cur}/100</th></tr>${r.segs.slice().reverse().map(x=>`<tr><td>${fd(x.date)}</td><td>${num(toD(x.d))}</td><td>${num(toV(x.l),1)}</td><td><b>${num(ecoV(x.l/x.d*100),2)}</b></td><td>${x.c?num(x.c/toD(x.d)*100,2):"–"}</td></tr>`).join("")}</table></div>`:""}<p class="meta">${t("Se calcula entre repostajes consecutivos llenando el depósito. Hacen falta al menos dos repostajes con kilometraje y volumen.")}</p>`}
+  if(tab==="ave"){const f=es.filter(e=>e.type==="fail"),tot=f.reduce((s,e)=>s+(e.cost||0),0);
+    h=`<h2>${t("Registro de averías")}</h2><p class="meta" style="margin-top:0">${t("{0} registradas · {1} en reparaciones",f.length,money(tot))}</p><button class="p" data-a="q" data-id="fail" style="width:100%;margin-bottom:12px">${t("+ Registrar avería")}</button><button data-a="sg" style="width:100%;margin-bottom:12px">${t("🔍 Buscar un problema o un repuesto")}</button>${f.length?f.map(e=>rowHtml(e,true)).join(""):`<div class="empty">${t("Sin averías registradas.")}</div>`}`}
+  if(tab==="rep")h=`<h2>${t("Repuestos")}</h2><div class="sb"><input id="pq" placeholder="${t("Ej.: pastillas de freno")}" enterkeyhint="search"><button class="p" data-a="go">${t("Buscar")}</button></div><h2>${t("Categorías")}</h2><div class="cats">${CATS.map(([i,n])=>`<button data-a="part" data-id="${esc(t(n))}"><span>${i}</span>${t(n)}</button>`).join("")}</div><p class="meta">${t("Se abre en otra pestaña con tu vehículo ya incluido en la búsqueda.")}</p>`;
+  if(tab==="his"){const sh=filter==="all"?es:es.filter(e=>e.type===filter);
+    h=`<h2>${t("Historial")}</h2><div class="chips">${[["all",t("Todo")],...Object.entries(TYPES).map(([k,n])=>[k,t(n)])].map(([k,n])=>`<button class="chip ${filter===k?"on":""}" data-a="f" data-id="${k}">${n}</button>`).join("")}</div>${sh.length?sh.map(e=>rowHtml(e,e.type==="fail")).join(""):`<div class="empty">${t("No hay registros todavía.")}</div>`}`}
+  app.innerHTML=h;
+}
+// acciones (delegación de eventos)
+const act={
+ tab:b=>{tab=b.dataset.id;render();scrollTo(0,0)},veh:b=>{S.cur=b.dataset.id;filter="all";save();render()},
+ addv:()=>vehForm(null),editv:()=>vehForm(veh()),close:b=>$("#"+b.dataset.id).close(),
+ add:()=>newEntry(tab==="ave"?"fail":"gas"),q:b=>newEntry(b.dataset.id),
+ ed:b=>newEntry(null,S.entries.find(x=>x.id===b.dataset.id)),
+ del:b=>{if(!confirm(t("¿Eliminar este registro?")))return;const x=S.entries.find(e=>e.id===b.dataset.id);(x&&x.files||[]).forEach(f=>delFile(f.id));S.entries=S.entries.filter(e=>e.id!==b.dataset.id);save();render()},
+ ok:b=>{S.entries.find(x=>x.id===b.dataset.id).status="done";save();render()},
+ att:b=>{attId=b.dataset.id;$("#fa").click()},file:b=>openFile(b.dataset.id),
+ rf:async b=>{if(!confirm(t("¿Quitar este documento?")))return;const e=S.entries.find(x=>x.id===b.dataset.id);e.files=e.files.filter(x=>x.id!==b.dataset.fid);await delFile(b.dataset.fid);save();render()},
+ s:b=>{const e=S.entries.find(x=>x.id===b.dataset.id);openSearch(e.title||e.notes||"")},sg:()=>openSearch(""),part:b=>openSearch(b.dataset.id),
+ go:()=>{const q=$("#pq").value.trim();if(q)openSearch(q)},f:b=>{filter=b.dataset.id;render()},
+ cfg:()=>$("#dc").showModal(),exp:exportAll,imp:()=>$("#fi").click(),
+ upk:()=>{const v=veh(),mk=Math.max(v.km0||0,...S.entries.filter(e=>e.vid===v.id).map(e=>e.km||0)),n=parseFloat(prompt(t("Kilometraje")+" ("+dU()+")",Math.round(toD(mk))));if(n>=0){S.entries.push({id:uid(),vid:v.id,type:"other",title:t("Actualizar kilometraje"),date:today(),km:fromD(n),cost:0});save();render()}},
+ delv:()=>{const v=veh();if(!confirm(t("¿Eliminar el vehículo y todos sus registros?")))return;S.entries.filter(e=>e.vid===v.id).forEach(x=>(x.files||[]).forEach(f=>delFile(f.id)));S.entries=S.entries.filter(e=>e.vid!==v.id);S.vehicles=S.vehicles.filter(x=>x.id!==v.id);S.cur=S.vehicles[0]?S.vehicles[0].id:null;save();render()}
+};
+document.addEventListener("click",e=>{const b=e.target.closest("[data-a]");if(b&&act[b.dataset.a])act[b.dataset.a](b)});
+document.addEventListener("input",e=>{if(e.target.id==="sq")buildLinks()});
+document.addEventListener("keydown",e=>{if(e.key==="Enter"&&e.target.id==="pq")act.go()});
+document.addEventListener("change",async e=>{const x=e.target;
+  if(x.id==="t")sync();
+  else if(x.id==="cf"){from=x.value;render()}else if(x.id==="ct"){to=x.value;render()}
+  else if(x.dataset.set){S.cfg[x.dataset.set]=x.value;save();build();render()}
+  else if(x.id==="vf")photoPick(x.files[0]);
+  else if(x.id==="fa"){const en=S.entries.find(z=>z.id===attId);if(!en)return;const m=await storeFiles([...x.files]);en.files=(en.files||[]).concat(m);x.value="";save();render()}
+  else if(x.id==="fi"&&x.files[0]){await importAll(x.files[0]);x.value=""}});
+document.addEventListener("submit",e=>{e.preventDefault();const f=e.target,d=f.closest("dialog"),p=f.id==="fm"?saveEntry():f.id==="fv"?saveVeh():Promise.resolve();p.then(()=>d.close())});
+if(!S.cur&&S.vehicles[0])S.cur=S.vehicles[0].id;
+build();render();
+try{navigator.storage&&navigator.storage.persist&&navigator.storage.persist()}catch(e){}
+if("serviceWorker" in navigator)addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));
+</script>
+</body>
+</html>
