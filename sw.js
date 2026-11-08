@@ -1,4 +1,4 @@
-const CACHE = "garaje-v8";
+const CACHE = "garaje-v11";
 const FILES = ["./", "./index.html", "./manifest.json", "./icons/icon-192.png", "./icons/icon-512.png", "./icons/maskable-512.png"];
 self.addEventListener("install", e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(FILES)));
@@ -10,6 +10,8 @@ self.addEventListener("activate", e => {
 });
 self.addEventListener("fetch", e => {
   if (e.request.method !== "GET" || new URL(e.request.url).origin !== location.origin) return;
+  const p = new URL(e.request.url).pathname;
+  if (p.includes("assetlinks") || p.startsWith("/.well-known/")) return;  // que el service worker no interfiera con la verificación de Android
   e.respondWith(
     caches.match(e.request).then(hit => hit || fetch(e.request).then(r => {
       const copy = r.clone();

@@ -164,6 +164,11 @@ dialog{border:1px solid #2f3d75;background:linear-gradient(160deg,#16204a,#0f163
 nav button{font-size:11px}
 .logo{font:800 22px system-ui,sans-serif;font-style:normal}
 .fab{width:56px;height:56px;padding:0!important;border-radius:50%;font-size:32px!important;line-height:1;display:grid;place-items:center}
+.t-chg{--c:#a3e635}
+.qa.c6{grid-template-columns:repeat(3,1fr)!important}.qa.c6 button{font-size:13px!important}
+h3.sub{font:italic 700 19px "Arial Narrow",system-ui,sans-serif;margin:20px 0 4px}
+nav{max-width:720px;margin-left:auto;margin-right:auto}
+.fab{right:max(14px,calc(50% - 346px))}
 </style>
 </head>
 <body>
@@ -257,6 +262,18 @@ const T={
 "Exportar copia":["Export backup","Exportar cópia","Exporter la sauvegarde","Sicherung exportieren"],"Importar copia":["Import backup","Importar cópia","Importer la sauvegarde","Sicherung importieren"],
 "Se sustituirán los datos actuales. ¿Continuar?":["Current data will be replaced. Continue?","Os dados atuais serão substituídos. Continuar?","Les données actuelles seront remplacées. Continuer ?","Die aktuellen Daten werden ersetzt. Fortfahren?"],
 "Algunos enlaces de tiendas son de afiliación: si compras, la app puede recibir una comisión sin coste extra para ti.":["Some store links are affiliate links: if you buy, the app may earn a commission at no extra cost to you.","Alguns links de lojas são de afiliação: se comprar, a app pode receber uma comissão sem custo extra para si.","Certains liens vers des boutiques sont des liens d’affiliation : si vous achetez, l’appli peut recevoir une commission sans frais supplémentaires pour vous.","Einige Shop-Links sind Affiliate-Links: Wenn du kaufst, erhält die App möglicherweise eine Provision – ohne Mehrkosten für dich."],
+"Carga":["Charge","Carga","Recharge","Laden"],"Motorización":["Powertrain","Motorização","Motorisation","Antrieb"],
+"Combustión (gasolina, diésel, GLP)":["Combustion (petrol, diesel, LPG)","Combustão (gasolina, gasóleo, GPL)","Thermique (essence, diesel, GPL)","Verbrenner (Benzin, Diesel, LPG)"],
+"Híbrido":["Hybrid","Híbrido","Hybride","Hybrid"],"Híbrido enchufable":["Plug-in hybrid","Híbrido plug-in","Hybride rechargeable","Plug-in-Hybrid"],"Eléctrico":["Electric","Elétrico","Électrique","Elektro"],
+"Batería (kWh)":["Battery (kWh)","Bateria (kWh)","Batterie (kWh)","Batterie (kWh)"],"Energía (kWh)":["Energy (kWh)","Energia (kWh)","Énergie (kWh)","Energie (kWh)"],
+"Lugar de carga":["Charging place","Local de carregamento","Lieu de recharge","Ladeort"],"Casa":["Home","Casa","Domicile","Zuhause"],
+"Pública (AC)":["Public (AC)","Pública (AC)","Publique (AC)","Öffentlich (AC)"],"Pública rápida (DC)":["Public fast (DC)","Pública rápida (DC)","Publique rapide (DC)","Öffentlich schnell (DC)"],
+"Combustible":["Fuel","Combustível","Carburant","Kraftstoff"],"Electricidad":["Electricity","Eletricidade","Électricité","Strom"],"Por carga":["Per charge","Por carregamento","Par recharge","Pro Ladung"],
+"Autonomía estimada":["Estimated range","Autonomia estimada","Autonomie estimée","Geschätzte Reichweite"],
+"Se calcula entre cargas consecutivas, suponiendo que cargas hasta un nivel parecido cada vez. Hacen falta al menos dos cargas con kilometraje y energía.":["Calculated between consecutive charges, assuming you charge to a similar level each time. At least two charges with mileage and energy are needed.","Calculado entre carregamentos consecutivos, assumindo que carrega até um nível semelhante de cada vez. São precisos pelo menos dois com quilometragem e energia.","Calculé entre recharges consécutives, en supposant une recharge à un niveau similaire à chaque fois. Il faut au moins deux recharges avec kilométrage et énergie.","Berechnet zwischen aufeinanderfolgenden Ladungen, wenn du jedes Mal auf einen ähnlichen Stand lädst. Mindestens zwei Ladungen mit Kilometerstand und Energie nötig."],
+"Coste combinado cada 100 {0}":["Combined cost per 100 {0}","Custo combinado por 100 {0}","Coût combiné pour 100 {0}","Kombinierte Kosten pro 100 {0}"],
+"Cable de carga tipo 2":["Type 2 charging cable","Cabo de carregamento Tipo 2","Câble de recharge Type 2","Typ-2-Ladekabel"],"Wallbox":["Wallbox","Wallbox","Wallbox","Wallbox"],
+"Batería 12 V":["12 V battery","Bateria de 12 V","Batterie 12 V","12-V-Batterie"],"Filtro de habitáculo":["Cabin filter","Filtro do habitáculo","Filtre d’habitacle","Innenraumfilter"],
 "Copia restaurada.":["Backup restored.","Cópia restaurada.","Sauvegarde restaurée.","Sicherung wiederhergestellt."],"El archivo no es una copia válida.":["This file is not a valid backup.","O ficheiro não é uma cópia válida.","Ce fichier n’est pas une sauvegarde valide.","Die Datei ist keine gültige Sicherung."],
 "“{0}” pesa más de 25 MB y no se ha guardado.":["“{0}” is over 25 MB and was not saved.","“{0}” tem mais de 25 MB e não foi guardado.","« {0} » dépasse 25 Mo et n’a pas été enregistré.","„{0}“ ist größer als 25 MB und wurde nicht gespeichert."],
 "No se pudo guardar “{0}”.":["Could not save “{0}”.","Não foi possível guardar “{0}”.","Impossible d’enregistrer « {0} ».","„{0}“ konnte nicht gespeichert werden."],
@@ -264,11 +281,22 @@ const T={
 "No se encuentra el archivo en este dispositivo.":["File not found on this device.","Ficheiro não encontrado neste dispositivo.","Fichier introuvable sur cet appareil.","Datei auf diesem Gerät nicht gefunden."]
 };
 const t=(k,...a)=>{const r=T[k],i=LI[S.cfg.lang];return((r&&i!==undefined&&r[i])||k).replace(/\{(\d)\}/g,(_,n)=>a[n])};
-const TYPES={gas:"Repostaje",rev:"Revisión",tyre:"Ruedas",fail:"Avería",ins:"Seguro",itv:"ITV",other:"Otro"};
-const ICO={gas:"⛽",rev:"🔧",tyre:"🛞",fail:"⚠️",ins:"🛡️",itv:"📋",other:"📝"};
+const TYPES={gas:"Repostaje",chg:"Carga",rev:"Revisión",tyre:"Ruedas",fail:"Avería",ins:"Seguro",itv:"ITV",other:"Otro"};
+const ICO={gas:"⛽",chg:"🔌",rev:"🔧",tyre:"🛞",fail:"⚠️",ins:"🛡️",itv:"📋",other:"📝"};
 const ty=k=>t(TYPES[k]);
+const POW={ice:"Combustión (gasolina, diésel, GLP)",hev:"Híbrido",phev:"Híbrido enchufable",ev:"Eléctrico"};
+const PL={home:"Casa",ac:"Pública (AC)",dc:"Pública rápida (DC)"};
+const pwr=v=>(v&&v.power)||"ice";
+const typesFor=(v,keep)=>Object.keys(TYPES).filter(k=>k===keep||(k==="gas"?pwr(v)!=="ev":k==="chg"?(pwr(v)==="ev"||pwr(v)==="phev"):true));
+const defType=()=>pwr(veh())==="ev"?"chg":"gas";
 const TABS=[["res","Inicio","🏁"],["con","Consumo","⛽"],["ave","Averías","🔧"],["rep","Repuestos","🛒"],["his","Historial","🗂️"]];
 const CATS=[["🛑","Frenos"],["🛢️","Aceite y filtros"],["🛞","Neumáticos"],["🔋","Batería"],["⛓️","Correa de distribución"],["💡","Bombillas y luces"],["🌧️","Escobillas"],["🔩","Amortiguadores"],["⚙️","Embrague"],["❄️","Refrigeración"],["💨","Escape"],["🏍️","Kit de arrastre"]];
+const EVX=[["🔌","Cable de carga tipo 2"],["🏠","Wallbox"],["🔋","Batería 12 V"],["🌬️","Filtro de habitáculo"]];
+function cats(v){const p=pwr(v);let l=CATS.slice();
+  if(v&&v.type!=="moto")l=l.filter(c=>c[1]!=="Kit de arrastre");
+  if(p==="ev")l=l.filter(c=>!["Correa de distribución","Embrague","Escape","Aceite y filtros","Batería"].includes(c[1])).concat(EVX);
+  if(p==="phev")l=l.concat(EVX.slice(0,2));
+  return l}
 const SH={es:{az:"amazon.es",eb:"ebay.es",ad:"autodoc.es",wp:"es.wallapop.com"},en:{az:"amazon.com",eb:"ebay.com",ad:"autodoc.co.uk"},pt:{az:"amazon.com.br",eb:"ebay.com",ad:"autodoc.pt"},fr:{az:"amazon.fr",eb:"ebay.fr",ad:"autodoc.fr"},de:{az:"amazon.de",eb:"ebay.de",ad:"autodoc.de"}};
 // ===== AFILIACIÓN: rellena estos datos cuando te aprueben en cada programa. Vacío = enlaces normales =====
 const AFF={
@@ -296,6 +324,8 @@ const toD=k=>mi()?k/1.609344:k,fromD=x=>+(mi()?x*1.609344:x).toFixed(1);
 const toV=l=>S.cfg.units==="us"?l/3.785411784:l,fromV=x=>+(S.cfg.units==="us"?x*3.785411784:x).toFixed(3);
 const ecoU=()=>S.cfg.units==="metric"?"L/100 km":S.cfg.units==="us"?"mpg (US)":"mpg (UK)";
 const ecoV=l100=>l100==null?null:S.cfg.units==="metric"?l100:(S.cfg.units==="us"?235.215:282.481)/l100;
+const ecoEU=()=>S.cfg.units==="metric"?"kWh/100 km":"mi/kWh";
+const ecoEV=k=>k==null?null:S.cfg.units==="metric"?k:62.1371/k;
 // almacén de documentos (IndexedDB)
 let _db;const idb=()=>_db||(_db=new Promise((res,rej)=>{const r=indexedDB.open("garaje-files",1);r.onupgradeneeded=()=>r.result.createObjectStore("f");r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)}));
 const putFile=async(id,b)=>{const d=await idb();return new Promise((res,rej)=>{const x=d.transaction("f","readwrite");x.objectStore("f").put(b,id);x.oncomplete=res;x.onerror=()=>rej(x.error)})};
@@ -311,15 +341,15 @@ const filesHtml=e=>(e.files&&e.files.length)?`<div class="fl">${e.files.map(f=>`
 const docsHtml=es=>{const d=es.flatMap(e=>(e.files||[]).map(f=>({e,f})));
   return `<h2>${t("Documentos")}</h2>`+(d.length?d.map(({e,f})=>`<button class="doc" data-a="file" data-id="${f.id}"><span style="font-size:26px">${fico(f)}</span><span><b>${esc(f.name)}</b><em>${ICO[e.type]} ${ty(e.type)} · ${fd(e.date)}</em></span></button>`).join(""):`<div class="empty">${t("Adjunta el recibo o las condiciones del seguro, la ficha de la ITV, facturas del taller… y los tendrás todos aquí.")}</div>`)};
 // consumo
-function consumo(es){
-  const g=es.filter(e=>e.type==="gas"&&e.km&&e.liters).sort((a,b)=>a.km-b.km),segs=[];
-  for(let i=1;i<g.length;i++){const d=g[i].km-g[i-1].km;if(d>0&&(!from||g[i].date>=from)&&(!to||g[i].date<=to))segs.push({date:g[i].date,d,l:g[i].liters,c:g[i].cost||0})}
+function consumo(es,ty0="gas",fq="liters"){
+  const g=es.filter(e=>e.type===ty0&&e.km&&e[fq]).sort((a,b)=>a.km-b.km),segs=[];
+  for(let i=1;i<g.length;i++){const d=g[i].km-g[i-1].km;if(d>0&&(!from||g[i].date>=from)&&(!to||g[i].date<=to))segs.push({date:g[i].date,d,l:g[i][fq],c:g[i].cost||0})}
   const K=segs.reduce((s,x)=>s+x.d,0),L=segs.reduce((s,x)=>s+x.l,0),C=segs.reduce((s,x)=>s+x.c,0);
   return{segs,K,L,C,l100:K?L/K*100:null,per100:K?C/toD(K)*100:null};
 }
 const odo=n=>String(Math.max(0,n)).padStart(6,"0").split("").map(d=>`<i>${d}</i>`).join("");
-function gauge(l100){const max=l100&&l100>12?20:12,f=l100?Math.min(1,l100/max):0,L=188.5,v=ecoV(l100);
-  return `<div class="gauge"><svg viewBox="0 0 140 84" role="img"><defs><linearGradient id="gg" x1="0" x2="1"><stop offset="0" stop-color="#38bdf8"/><stop offset=".6" stop-color="#a78bfa"/><stop offset="1" stop-color="#f472b6"/></linearGradient></defs><path d="M10 74 A60 60 0 0 1 130 74" fill="none" stroke="rgba(255,255,255,.12)" stroke-width="12" stroke-linecap="round"/>${f?`<path d="M10 74 A60 60 0 0 1 130 74" fill="none" stroke="url(#gg)" stroke-width="12" stroke-linecap="round" stroke-dasharray="${L*f} ${L}"/>`:""}</svg><div class="gv"><span class="num">${v?num(v,1):"–"}</span><small>${ecoU()} · ${t("media")}</small></div></div>`}
+function gauge(l100,el,sub2){const max=el?(l100&&l100>30?50:30):(l100&&l100>12?20:12),f=l100?Math.min(1,l100/max):0,L=188.5,v=el?ecoEV(l100):ecoV(l100);
+  return `<div class="gauge"><svg viewBox="0 0 140 84" role="img"><defs><linearGradient id="gg" x1="0" x2="1"><stop offset="0" stop-color="#38bdf8"/><stop offset=".6" stop-color="#a78bfa"/><stop offset="1" stop-color="#f472b6"/></linearGradient></defs><path d="M10 74 A60 60 0 0 1 130 74" fill="none" stroke="rgba(255,255,255,.12)" stroke-width="12" stroke-linecap="round"/>${f?`<path d="M10 74 A60 60 0 0 1 130 74" fill="none" stroke="url(#gg)" stroke-width="12" stroke-linecap="round" stroke-dasharray="${L*f} ${L}"/>`:""}</svg><div class="gv"><span class="num">${v?num(v,1):"–"}</span><small>${el?ecoEU():ecoU()} · ${t("media")}</small>${sub2||""}</div></div>`}
 function chart(es){const n=new Date(),out=[];
   for(let i=5;i>=0;i--){const ix=n.getMonth()-i,yy=n.getFullYear()+Math.floor(ix/12),mm=((ix%12)+12)%12,key=`${yy}-${String(mm+1).padStart(2,"0")}`;
     out.push({l:new Date(yy,mm,1).toLocaleDateString(S.cfg.lang,{month:"short"}),v:es.filter(e=>e.date.startsWith(key)).reduce((s,e)=>s+(e.cost||0),0)})}
@@ -328,7 +358,7 @@ function chart(es){const n=new Date(),out=[];
 function rowHtml(e,withSearch){const f=e.type==="fail";
   return `<div class="row t-${e.type}"><div class="ic">${ICO[e.type]}</div><div class="rb"><div class="top"><span><span class="tag ${f&&e.status==="open"?"open":""}">${ty(e.type)}${f?" · "+t(e.status==="open"?"pendiente":"resuelta"):""}</span>${fd(e.date)}</span><span>${e.cost?money(e.cost):""}</span></div>
   ${e.title?`<div><b>${esc(e.title)}</b></div>`:""}
-  <div class="meta">${e.km?num(toD(e.km))+" "+dU():""}${e.liters?" · "+num(toV(e.liters),2)+" "+vU()+(e.cost?" · "+num(e.cost/toV(e.liters),3)+" "+S.cfg.cur+"/"+vU():""):""}</div>
+  <div class="meta">${e.km?num(toD(e.km))+" "+dU():""}${e.liters?" · "+num(toV(e.liters),2)+" "+vU()+(e.cost?" · "+num(e.cost/toV(e.liters),3)+" "+S.cfg.cur+"/"+vU():""):""}${e.kwh?" · "+num(e.kwh,1)+" kWh"+(e.cost?" · "+num(e.cost/e.kwh,3)+" "+S.cfg.cur+"/kWh":""):""}${e.place?" · "+t(PL[e.place]):""}</div>
   ${e.notes?`<div class="notes">${esc(e.notes)}</div>`:""}${filesHtml(e)}
   <div class="ra"><button class="g" data-a="att" data-id="${e.id}">📎 ${t("Adjuntar")}</button><button class="g" data-a="ed" data-id="${e.id}">${t("Editar")}</button>${withSearch?`<button class="g" data-a="s" data-id="${e.id}">${t("🔍 Buscar causa / repuesto")}</button>`:""}${f&&e.status==="open"?`<button class="g" data-a="ok" data-id="${e.id}">${t("Marcar resuelta")}</button>`:""}<button class="g" data-a="del" data-id="${e.id}">${t("Eliminar")}</button></div></div></div>`}
 // diálogos
@@ -340,6 +370,7 @@ function build(){
   <div class="two"><div><label for="d">${t("Fecha")}</label><input type="date" id="d" required></div><div><label for="k">${t("Kilometraje")} (${dU()})</label><input type="number" id="k" inputmode="numeric" min="0"></div></div>
   <div class="two"><div><label for="c">${t("Importe")} (${S.cfg.cur})</label><input type="number" id="c" inputmode="decimal" step="0.01" min="0"></div>
   <div id="lw"><label for="l">${t("Volumen")} (${vU()})</label><input type="number" id="l" inputmode="decimal" step="0.01" min="0"></div>
+  <div id="ew"><label for="kw">${t("Energía (kWh)")}</label><input type="number" id="kw" inputmode="decimal" step="0.01" min="0"></div><div id="pw"><label for="pl">${t("Lugar de carga")}</label><select id="pl">${Object.entries(PL).map(([k,v])=>`<option value="${k}">${t(v)}</option>`).join("")}</select></div>
   <div id="sw"><label for="st">${t("Estado")}</label><select id="st"><option value="open">${t("Pendiente")}</option><option value="done">${t("Resuelta")}</option></select></div></div>
   <div class="two"><div><label for="nd">${t("Próxima fecha")}</label><input type="date" id="nd"></div><div><label for="nk">${t("Próximo kilometraje")} (${dU()})</label><input type="number" id="nk" inputmode="numeric" min="0"></div></div>
   <label for="fl">${t("Documentos (PDF o foto)")}</label><input type="file" id="fl" multiple accept="application/pdf,image/*"><div class="meta" style="margin-top:3px">${t("Recibo, condiciones generales, factura, ficha de la ITV…")}</div>
@@ -350,6 +381,7 @@ function build(){
   <label for="vn">${t("Nombre")}</label><input id="vn" required>
   <label for="vm">${t("Marca, modelo y motor")}</label><input id="vm" placeholder="Seat León 1.6 TDI">
   <div class="two"><div><label for="vy">${t("Año")}</label><input id="vy" type="number" inputmode="numeric" min="1950" max="2100"></div><div><label for="vt">${t("Tipo")}</label><select id="vt"><option value="coche">${t("Coche")}</option><option value="moto">${t("Moto")}</option></select></div></div>
+  <label for="vpw">${t("Motorización")}</label><select id="vpw">${Object.entries(POW).map(([k,v])=>`<option value="${k}">${t(v)}</option>`).join("")}</select><div id="bw"><label for="vb">${t("Batería (kWh)")}</label><input id="vb" type="number" inputmode="decimal" step="0.1" min="0"></div>
   <div class="two"><div><label for="vp">${t("Matrícula")}</label><input id="vp"></div><div><label for="vk">${t("Kilometraje inicial")} (${dU()})</label><input id="vk" type="number" inputmode="numeric" min="0"></div></div>
   <div class="acts"><button type="button" data-a="close" data-id="dv">${t("Cancelar")}</button><button class="p">${t("Guardar vehículo")}</button></div></form>`;
   $("#ds").innerHTML=`<div><h2 style="margin-top:0">${t("Buscar avería o repuesto")}</h2><label for="sq">${t("¿Qué pasa o qué necesitas?")}</label><input id="sq" placeholder="${t("Ej.: ruido al frenar, pastillas de freno, testigo motor…")}">
@@ -363,19 +395,20 @@ function build(){
   <div class="ra" style="justify-content:flex-start"><button class="p" data-a="exp">${t("Exportar copia")}</button><button data-a="imp">${t("Importar copia")}</button></div>
   <div class="acts"><span></span><button data-a="close" data-id="dc">${t("Cerrar")}</button></div></div>`;
 }
-const sync=()=>{const x=$("#t").value;$("#lw").style.display=x==="gas"?"":"none";$("#sw").style.display=x==="fail"?"":"none"};
-function newEntry(type,e){eid=e?e.id:null;$("#fm").reset();$("#fh").textContent=t(e?"Editar registro":"Nuevo registro");
-  $("#t").value=e?e.type:type||"gas";$("#d").value=e?e.date:today();
-  if(e){$("#ti").value=e.title||"";$("#k").value=e.km?Math.round(toD(e.km)):"";$("#c").value=e.cost||"";$("#l").value=e.liters?+toV(e.liters).toFixed(2):"";$("#st").value=e.status||"open";$("#nd").value=e.nextDate||"";$("#nk").value=e.nextKm?Math.round(toD(e.nextKm)):"";$("#n").value=e.notes||""}
+const sync=()=>{const x=$("#t").value;$("#lw").style.display=x==="gas"?"":"none";$("#ew").style.display=x==="chg"?"":"none";$("#pw").style.display=x==="chg"?"":"none";$("#sw").style.display=x==="fail"?"":"none"};
+const syncV=()=>{const p=$("#vpw").value;$("#bw").style.display=(p==="ev"||p==="phev")?"":"none"};
+function newEntry(type,e){eid=e?e.id:null;$("#fm").reset();$("#fh").textContent=t(e?"Editar registro":"Nuevo registro");$("#t").innerHTML=typesFor(veh(),e&&e.type).map(k=>`<option value="${k}">${ty(k)}</option>`).join("");
+  $("#t").value=e?e.type:(type&&typesFor(veh()).includes(type)?type:defType());$("#d").value=e?e.date:today();
+  if(e){$("#ti").value=e.title||"";$("#k").value=e.km?Math.round(toD(e.km)):"";$("#c").value=e.cost||"";$("#l").value=e.liters?+toV(e.liters).toFixed(2):"";$("#st").value=e.status||"open";$("#nd").value=e.nextDate||"";$("#nk").value=e.nextKm?Math.round(toD(e.nextKm)):"";$("#n").value=e.notes||"";$("#kw").value=e.kwh||"";$("#pl").value=e.place||"home"}
   sync();$("#dg").showModal()}
 async function saveEntry(){const f=id=>$(id).value,k=f("#t"),m=await storeFiles([...$("#fl").files]),old=eid&&S.entries.find(x=>x.id===eid);
-  const e={id:eid||uid(),vid:old?old.vid:S.cur,type:k,title:f("#ti").trim(),date:f("#d")||today(),km:fromD(parseFloat(f("#k"))||0),cost:parseFloat(f("#c"))||0,liters:k==="gas"?fromV(parseFloat(f("#l"))||0):0,status:k==="fail"?f("#st"):"",nextDate:f("#nd"),nextKm:fromD(parseFloat(f("#nk"))||0),notes:f("#n").trim(),files:(old&&old.files||[]).concat(m)};
+  const e={id:eid||uid(),vid:old?old.vid:S.cur,type:k,title:f("#ti").trim(),date:f("#d")||today(),km:fromD(parseFloat(f("#k"))||0),cost:parseFloat(f("#c"))||0,liters:k==="gas"?fromV(parseFloat(f("#l"))||0):0,kwh:k==="chg"?+(parseFloat(f("#kw"))||0).toFixed(2):0,place:k==="chg"?f("#pl"):"",status:k==="fail"?f("#st"):"",nextDate:f("#nd"),nextKm:fromD(parseFloat(f("#nk"))||0),notes:f("#n").trim(),files:(old&&old.files||[]).concat(m)};
   if(old)Object.assign(old,e);else S.entries.push(e);save();render()}
 function vehForm(v){editing=v?v.id:null;$("#fv").reset();photo=v?v.photo||"":"";photo?$("#vimg").src=photo:$("#vimg").removeAttribute("src");$("#vimg").style.visibility=photo?"visible":"hidden";
   $("#vh").textContent=t(v?"Editar vehículo":"Nuevo vehículo");
   if(v){$("#vn").value=v.name;$("#vm").value=v.model||"";$("#vy").value=v.year||"";$("#vt").value=v.type;$("#vp").value=v.plate||"";$("#vk").value=v.km0?Math.round(toD(v.km0)):""}
-  $("#dv").showModal()}
-async function saveVeh(){const d={name:$("#vn").value.trim(),model:$("#vm").value.trim(),year:parseInt($("#vy").value)||0,type:$("#vt").value,plate:$("#vp").value.trim(),km0:fromD(parseFloat($("#vk").value)||0),photo};
+  $("#vpw").value=v?pwr(v):"ice";$("#vb").value=v&&v.battery?v.battery:"";syncV();$("#dv").showModal()}
+async function saveVeh(){const d={name:$("#vn").value.trim(),model:$("#vm").value.trim(),year:parseInt($("#vy").value)||0,type:$("#vt").value,plate:$("#vp").value.trim(),power:$("#vpw").value,battery:parseFloat($("#vb").value)||0,km0:fromD(parseFloat($("#vk").value)||0),photo};
   if(editing)Object.assign(S.vehicles.find(x=>x.id===editing),d);else{const v={id:uid(),...d};S.vehicles.push(v);S.cur=v.id}save();render()}
 function photoPick(f){if(!f)return;const r=new FileReader();r.onload=()=>{const im=new Image();im.onload=()=>{const s=Math.min(1,700/Math.max(im.width,im.height)),c=document.createElement("canvas");c.width=im.width*s;c.height=im.height*s;c.getContext("2d").drawImage(im,0,0,c.width,c.height);photo=c.toDataURL("image/jpeg",.75);$("#vimg").src=photo;$("#vimg").style.visibility="visible"};im.src=r.result};r.readAsDataURL(f)}
 // búsqueda de averías y repuestos
@@ -383,7 +416,7 @@ function openSearch(q){$("#sq").value=q||"";buildLinks();$("#ds").showModal()}
 function buildLinks(){const q=$("#sq").value.trim(),v=veh(),e=encodeURIComponent,sh=SH[S.cfg.lang]||SH.en;
   const c=v?[v.model||v.name,v.year||""].filter(Boolean).join(" "):"";
   const km=v?Math.max(v.km0||0,...S.entries.filter(x=>x.vid===v.id).map(x=>x.km||0)):0;
-  const prompt=t("Mi {0}{1} tiene este problema o necesidad: {2}. ¿Cuáles son las causas probables, cómo lo compruebo yo mismo y qué repuesto o reparación haría falta, con precio orientativo?",c||t(v&&v.type==="moto"?"Moto":"Coche").toLowerCase(),km?` (${num(toD(km))} ${dU()})`:"",q||"…");
+  const prompt=t("Mi {0}{1} tiene este problema o necesidad: {2}. ¿Cuáles son las causas probables, cómo lo compruebo yo mismo y qué repuesto o reparación haría falta, con precio orientativo?",(c||t(v&&v.type==="moto"?"Moto":"Coche").toLowerCase())+(v&&pwr(v)!=="ice"?" ("+t(POW[pwr(v)])+")":""),km?` (${num(toD(km))} ${dU()})`:"",q||"…");
   const full=e(`${c} ${q}`.trim()),a=(u,n,cl="")=>`<a class="btn ${cl}" href="${u}" target="_blank" rel="sponsored noopener">${n}</a>`;
   $("#sl1").innerHTML=a(`https://www.google.com/search?q=${full}`,"Google")+a(`https://www.youtube.com/results?search_query=${full}`,"YouTube")+a(`https://claude.ai/new?q=${e(prompt)}`,t("Preguntar a Claude"),"ai")+a(`https://chatgpt.com/?q=${e(prompt)}`,t("Preguntar a ChatGPT"),"ai")+a(`https://www.google.com/search?udm=50&q=${e(prompt)}`,t("IA de Google"),"ai");
   $("#sl2").innerHTML=a(`https://www.google.com/search?tbm=shop&q=${full}`,"Google Shopping")+a(aff(sh.az,`https://www.${sh.az}/s?k=${full}`),"Amazon")+a(aff(sh.eb,`https://www.${sh.eb}/sch/i.html?_nkw=${full}`),"eBay")+a(aff(sh.ad,`https://www.${sh.ad}/search?keyword=${full}`),"Autodoc")+(sh.wp?a(`https://${sh.wp}/app/search?keywords=${full}`,"Wallapop"):"");$("#disc").textContent=hasAff()?t("Algunos enlaces de tiendas son de afiliación: si compras, la app puede recibir una comisión sin coste extra para ti."):""}
@@ -408,7 +441,7 @@ function render(){
   const maxKm=Math.max(v.km0||0,...es.map(e=>e.km||0));let h="";
   if(tab==="res"){
     const total=es.reduce((s,e)=>s+(e.cost||0),0),yr=new Date().getFullYear(),tY=es.filter(e=>e.date.startsWith(yr)).reduce((s,e)=>s+(e.cost||0),0);
-    const co=(()=>{const a=from,b=to;from=to="";const r=consumo(es);from=a;to=b;return r})();
+    const pw=pwr(v),[co,ce]=(()=>{const a=from,b=to;from=to="";const r=[consumo(es),consumo(es,"chg","kwh")];from=a;to=b;return r})();
     const last={};es.slice().reverse().forEach(e=>{if(e.nextDate||e.nextKm)last[e.type]=e});
     const rems=Object.values(last).map(e=>{let days=null,kl=null;
       if(e.nextDate)days=Math.round((new Date(e.nextDate+"T00:00:00")-new Date(today()+"T00:00:00"))/864e5);
@@ -418,30 +451,35 @@ function render(){
       if(kl!==null)p.push(kl<0?t("{0} {1} de más",num(toD(-kl)),dU()):t("faltan {0} {1}",num(toD(kl)),dU()));
       return{e,late,soon,txt:p.join(" · "),s:days!==null?days:9999}}).sort((a,b)=>a.s-b.s);
     const open=es.filter(e=>e.type==="fail"&&e.status==="open").length;
-    h=`<div class="hero">${v.photo?`<img src="${v.photo}" alt="">`:`<div class="ph0">${v.type==="moto"?"🏍️":"🚗"}</div>`}<div class="in"><div><strong class="vt">${esc(v.name)}</strong><small>${t(v.type==="moto"?"Moto":"Coche")}${v.model?" · "+esc(v.model):""}${v.year?" · "+v.year:""}</small>${v.plate?`<span class="plate">${esc(v.plate)}</span>`:""}<span class="odo">${odo(Math.round(toD(maxKm)))}<b>${dU()}</b></span></div><div style="display:flex;flex-direction:column;gap:6px"><button data-a="upk">${t("Actualizar kilometraje")}</button><button data-a="editv">${t("Editar / foto")}</button></div></div></div>
-    <div class="qa">${[["gas","⛽","Repostaje"],["fail","⚠️","Avería"],["rev","🔧","Revisión"],["itv","📋","ITV"]].map(([k,i,n])=>`<button data-a="q" data-id="${k}"><span>${i}</span>${t(n)}</button>`).join("")}<button data-a="tab" data-id="rep"><span>🛒</span>${t("Repuestos")}</button></div>
-    <div class="dash">${gauge(co.l100)}<div class="side"><div class="stat"><span class="num">${money(tY)}</span><span>${t("gastado en {0}",yr)}</span></div><div class="stat"><span class="num">${money(total)}</span><span>${t("gasto total")}</span></div></div></div>
+    h=`<div class="hero">${v.photo?`<img src="${v.photo}" alt="">`:`<div class="ph0">${v.type==="moto"?"🏍️":"🚗"}</div>`}<div class="in"><div><strong class="vt">${esc(v.name)}</strong><small>${t(v.type==="moto"?"Moto":"Coche")}${v.model?" · "+esc(v.model):""}${v.year?" · "+v.year:""}${pw!=="ice"?" · "+t(POW[pw]):""}${v.battery&&(pw==="ev"||pw==="phev")?" · "+v.battery+" kWh":""}</small>${v.plate?`<span class="plate">${esc(v.plate)}</span>`:""}<span class="odo">${odo(Math.round(toD(maxKm)))}<b>${dU()}</b></span></div><div style="display:flex;flex-direction:column;gap:6px"><button data-a="upk">${t("Actualizar kilometraje")}</button><button data-a="editv">${t("Editar / foto")}</button></div></div></div>
+    <div class="qa ${pw==="phev"?"c6":""}">${[...(pw==="ev"?[["chg","🔌","Carga"]]:pw==="phev"?[["gas","⛽","Repostaje"],["chg","🔌","Carga"]]:[["gas","⛽","Repostaje"]]),["fail","⚠️","Avería"],["rev","🔧","Revisión"],["itv","📋","ITV"]].map(([k,i,n])=>`<button data-a="q" data-id="${k}"><span>${i}</span>${t(n)}</button>`).join("")}<button data-a="tab" data-id="rep"><span>🛒</span>${t("Repuestos")}</button></div>
+    <div class="dash">${pw==="ev"?gauge(ce.l100,true):gauge(co.l100,false,pw==="phev"&&ce.l100?`<small style="display:block;margin-top:2px">⚡ ${num(ecoEV(ce.l100),1)} ${ecoEU()}</small>`:"")}<div class="side"><div class="stat"><span class="num">${money(tY)}</span><span>${t("gastado en {0}",yr)}</span></div><div class="stat"><span class="num">${money(total)}</span><span>${t("gasto total")}</span></div></div></div>
     ${open?`<div class="rem late" style="margin-top:10px"><div><b>${t(open>1?"{0} averías pendientes":"{0} avería pendiente",open)}</b></div><button data-a="tab" data-id="ave">${t("Ver")}</button></div>`:""}
     <h2>${t("Próximos avisos")}</h2>${rems.length?rems.map(r=>`<div class="rem ${r.late?"late":r.soon?"soon":""}"><div><b>${ICO[r.e.type]} ${ty(r.e.type)}</b><em>${r.e.nextDate?t("Vence el {0}",fd(r.e.nextDate)):""}${r.e.nextDate&&r.e.nextKm?" · ":""}${r.e.nextKm?t("a los {0} {1}",num(toD(r.e.nextKm)),dU()):""}</em></div><div class="w">${r.txt}</div></div>`).join(""):`<div class="empty">${t("Al guardar una ITV, seguro o revisión, indica la próxima fecha o el próximo kilometraje y el aviso aparecerá aquí.")}</div>`}
     ${chart(es)}${docsHtml(es)}
     <div style="text-align:center;margin-top:18px"><button class="g" data-a="delv">${t("Eliminar este vehículo")}</button></div>`;
   }
-  if(tab==="con"){const r=consumo(es),ev=ecoV(r.l100);
-    h=`<h2>${t("Consumo")}</h2><div class="two"><div><label for="cf">${t("Desde")}</label><input type="date" id="cf" value="${from}"></div><div><label for="ct">${t("Hasta")}</label><input type="date" id="ct" value="${to}"></div></div>
-    <div class="stats" style="margin-top:12px"><div class="stat"><span class="num">${ev?num(ev,2):"–"}</span><span>${ecoU()} ${t("(total del período)")}</span></div><div class="stat"><span class="num">${r.per100?money(r.per100):"–"}</span><span>${t("cada 100 {0}",dU())}</span></div><div class="stat"><span class="num">${num(toD(r.K))}</span><span>${dU()} · ${num(toV(r.L),1)} ${vU()} · ${money(r.C)}</span></div></div>
-    <h2>${t("Por repostaje")}</h2>${r.segs.length?`<div class="wrap"><table><tr><th>${t("Fecha")}</th><th>${dU()}</th><th>${vU()}</th><th>${ecoU().split(" ")[0]}</th><th>${S.cfg.cur}/100</th></tr>${r.segs.slice().reverse().map(x=>`<tr><td>${fd(x.date)}</td><td>${num(toD(x.d))}</td><td>${num(toV(x.l),1)}</td><td><b>${num(ecoV(x.l/x.d*100),2)}</b></td><td>${x.c?num(x.c/toD(x.d)*100,2):"–"}</td></tr>`).join("")}</table></div>`:""}<p class="meta">${t("Se calcula entre repostajes consecutivos llenando el depósito. Hacen falta al menos dos repostajes con kilometraje y volumen.")}</p>`}
+  if(tab==="con"){const p=pwr(v),sF=p!=="ev",sE=p==="ev"||p==="phev",rf=consumo(es),re=consumo(es,"chg","kwh");
+    const block=(r,el)=>{const ev=el?ecoEV(r.l100):ecoV(r.l100),vu=el?"kWh":vU(),q=el?r.L:toV(r.L),rng=el&&v.battery&&r.l100?Math.round(toD(v.battery/r.l100*100)):0;
+      return `<div class="stats" style="margin-top:12px"><div class="stat"><span class="num">${ev?num(ev,2):"–"}</span><span>${el?ecoEU():ecoU()} ${t("(total del período)")}</span></div><div class="stat"><span class="num">${r.per100?money(r.per100):"–"}</span><span>${t("cada 100 {0}",dU())}</span></div><div class="stat"><span class="num">${num(toD(r.K))}</span><span>${dU()} · ${num(q,1)} ${vu} · ${money(r.C)}</span></div>${rng?`<div class="stat"><span class="num">~${num(rng)}</span><span>${dU()} · ${t("Autonomía estimada")}</span></div>`:""}</div>
+      ${r.segs.length?`<h2>${t(el?"Por carga":"Por repostaje")}</h2><div class="wrap"><table><tr><th>${t("Fecha")}</th><th>${dU()}</th><th>${vu}</th><th>${(el?ecoEU():ecoU()).split(" ")[0]}</th><th>${S.cfg.cur}/100</th></tr>${r.segs.slice().reverse().map(x=>`<tr><td>${fd(x.date)}</td><td>${num(toD(x.d))}</td><td>${num(el?x.l:toV(x.l),1)}</td><td><b>${num(el?ecoEV(x.l/x.d*100):ecoV(x.l/x.d*100),2)}</b></td><td>${x.c?num(x.c/toD(x.d)*100,2):"–"}</td></tr>`).join("")}</table></div>`:""}`};
+    const comb=(()=>{if(p!=="phev")return"";const ks=es.filter(e=>(e.type==="gas"||e.type==="chg")&&e.km&&(!from||e.date>=from)&&(!to||e.date<=to)).map(e=>e.km),span=ks.length>1?Math.max(...ks)-Math.min(...ks):0,cost=rf.C+re.C;
+      return span&&cost?`<div class="stat" style="margin-top:12px"><span class="num">${money(cost/toD(span)*100)}</span><span>${t("Coste combinado cada 100 {0}",dU())}</span></div>`:""})();
+    h=`<h2>${t("Consumo")}</h2><div class="two"><div><label for="cf">${t("Desde")}</label><input type="date" id="cf" value="${from}"></div><div><label for="ct">${t("Hasta")}</label><input type="date" id="ct" value="${to}"></div></div>`
+     +(sF?(sE?`<h3 class="sub">⛽ ${t("Combustible")}</h3>`:"")+block(rf,false)+`<p class="meta">${t("Se calcula entre repostajes consecutivos llenando el depósito. Hacen falta al menos dos repostajes con kilometraje y volumen.")}</p>`:"")
+     +(sE?(sF?`<h3 class="sub">🔌 ${t("Electricidad")}</h3>`:"")+block(re,true)+`<p class="meta">${t("Se calcula entre cargas consecutivas, suponiendo que cargas hasta un nivel parecido cada vez. Hacen falta al menos dos cargas con kilometraje y energía.")}</p>`:"")+comb}
   if(tab==="ave"){const f=es.filter(e=>e.type==="fail"),tot=f.reduce((s,e)=>s+(e.cost||0),0);
     h=`<h2>${t("Registro de averías")}</h2><p class="meta" style="margin-top:0">${t("{0} registradas · {1} en reparaciones",f.length,money(tot))}</p><button class="p" data-a="q" data-id="fail" style="width:100%;margin-bottom:12px">${t("+ Registrar avería")}</button><button data-a="sg" style="width:100%;margin-bottom:12px">${t("🔍 Buscar un problema o un repuesto")}</button>${f.length?f.map(e=>rowHtml(e,true)).join(""):`<div class="empty">${t("Sin averías registradas.")}</div>`}`}
-  if(tab==="rep")h=`<h2>${t("Repuestos")}</h2><div class="sb"><input id="pq" placeholder="${t("Ej.: pastillas de freno")}" enterkeyhint="search"><button class="p" data-a="go">${t("Buscar")}</button></div><h2>${t("Categorías")}</h2><div class="cats">${CATS.map(([i,n])=>`<button data-a="part" data-id="${esc(t(n))}"><span>${i}</span>${t(n)}</button>`).join("")}</div><p class="meta">${t("Se abre en otra pestaña con tu vehículo ya incluido en la búsqueda.")}</p>`;
+  if(tab==="rep")h=`<h2>${t("Repuestos")}</h2><div class="sb"><input id="pq" placeholder="${t("Ej.: pastillas de freno")}" enterkeyhint="search"><button class="p" data-a="go">${t("Buscar")}</button></div><h2>${t("Categorías")}</h2><div class="cats">${cats(v).map(([i,n])=>`<button data-a="part" data-id="${esc(t(n))}"><span>${i}</span>${t(n)}</button>`).join("")}</div><p class="meta">${t("Se abre en otra pestaña con tu vehículo ya incluido en la búsqueda.")}</p>`;
   if(tab==="his"){const sh=filter==="all"?es:es.filter(e=>e.type===filter);
-    h=`<h2>${t("Historial")}</h2><div class="chips">${[["all",t("Todo")],...Object.entries(TYPES).map(([k,n])=>[k,t(n)])].map(([k,n])=>`<button class="chip ${filter===k?"on":""}" data-a="f" data-id="${k}">${n}</button>`).join("")}</div>${sh.length?sh.map(e=>rowHtml(e,e.type==="fail")).join(""):`<div class="empty">${t("No hay registros todavía.")}</div>`}`}
+    h=`<h2>${t("Historial")}</h2><div class="chips">${[["all",t("Todo")],...typesFor(v).map(k=>[k,ty(k)])].map(([k,n])=>`<button class="chip ${filter===k?"on":""}" data-a="f" data-id="${k}">${n}</button>`).join("")}</div>${sh.length?sh.map(e=>rowHtml(e,e.type==="fail")).join(""):`<div class="empty">${t("No hay registros todavía.")}</div>`}`}
   app.innerHTML=h;
 }
 // acciones (delegación de eventos)
 const act={
  tab:b=>{tab=b.dataset.id;render();scrollTo(0,0)},veh:b=>{S.cur=b.dataset.id;filter="all";save();render()},
  addv:()=>vehForm(null),editv:()=>vehForm(veh()),close:b=>$("#"+b.dataset.id).close(),
- add:()=>newEntry(tab==="ave"?"fail":"gas"),q:b=>newEntry(b.dataset.id),
+ add:()=>newEntry(tab==="ave"?"fail":defType()),q:b=>newEntry(b.dataset.id),
  ed:b=>newEntry(null,S.entries.find(x=>x.id===b.dataset.id)),
  del:b=>{if(!confirm(t("¿Eliminar este registro?")))return;const x=S.entries.find(e=>e.id===b.dataset.id);(x&&x.files||[]).forEach(f=>delFile(f.id));S.entries=S.entries.filter(e=>e.id!==b.dataset.id);save();render()},
  ok:b=>{S.entries.find(x=>x.id===b.dataset.id).status="done";save();render()},
@@ -458,6 +496,7 @@ document.addEventListener("input",e=>{if(e.target.id==="sq")buildLinks()});
 document.addEventListener("keydown",e=>{if(e.key==="Enter"&&e.target.id==="pq")act.go()});
 document.addEventListener("change",async e=>{const x=e.target;
   if(x.id==="t")sync();
+  else if(x.id==="vpw")syncV();
   else if(x.id==="cf"){from=x.value;render()}else if(x.id==="ct"){to=x.value;render()}
   else if(x.dataset.set){S.cfg[x.dataset.set]=x.value;save();build();render()}
   else if(x.id==="vf")photoPick(x.files[0]);

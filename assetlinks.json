@@ -1,0 +1,8 @@
+[{
+      "relation": ["delegate_permission/common.handle_all_urls"],
+      "target": {
+        "namespace": "android_app",
+        "package_name": "io.github.aztecaredondela.garaje",
+        "sha256_cert_fingerprints": ["DF:12:76:12:B2:9F:72:A7:05:02:DB:EB:F9:9D:D9:94:79:77:0B:B7:32:8D:B4:39:AF:D4:4C:A6:89:F5:E2:84"]
+      }
+    }]
